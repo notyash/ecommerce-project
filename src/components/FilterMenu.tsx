@@ -1,7 +1,8 @@
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Products } from "../types";
 import ShowProducts from "./ProductsCard";
+import { CartContext, CartDispatchContext } from "../context/CartContext";
 
 const categories = [
     {label: "men's clothing", display_name: "Men's Clothing"},
@@ -12,6 +13,8 @@ const categories = [
 
 export function FilterMenu({productData}: {productData?: Products[]}) {
     const [filter, setFilter] = useState<string[]>([])
+    const cartItems = useContext(CartContext)
+    const dispatch = useContext(CartDispatchContext)
 
     function toggleFilter(category: string) {
         setFilter(filter.includes(category) ? filter.filter(item => item !== category) : [...filter, category])
@@ -35,9 +38,12 @@ export function FilterMenu({productData}: {productData?: Products[]}) {
                 {productsData}
             </div>
             <div className="flex flex-col w-64 sticky top-24 h-screen shrink-0 gap-1 pt-4 mr-5 bg-[#EBEBEB]">
-                <h1 className="font-semibold text-xl pl-6 bg-[]">🛒 Your Cart :</h1>
+                <h1 className="font-semibold text-xl pl-6 bg-[]">🛒 Your Cart: {cartItems.length}</h1>
                 <hr className="border-gray-300 my-3 w-full mt-4 mb-4"></hr>
-
+                <ul>
+                    {cartItems.map(item => <li>- {item.title}<button className="bg-[#466EC3]" onClick={ () =>
+                        dispatch?.({type:"REMOVE_ITEM", payload:{id: item.id}})}>Remove From Cart</button> </li> )}
+                </ul>
             </div>
         </div>
     )

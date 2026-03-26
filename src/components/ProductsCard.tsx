@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { CartDispatchContext } from "../context/CartContext";
 import { Products } from "../types";
 import { getFreeDeliveryTill, getRandomBought } from "../utils/utils";
 
@@ -10,14 +12,7 @@ export default function ShowProducts({product} : {product: Products}) {
       price
         } = product
 
-    function addToCart({title}: Products) {
-      return (
-        <div>
-          <h1>Item: {title}</h1>
-        </div>
-      )
-    }
-
+    const dispatch = useContext(CartDispatchContext)
     return (
         <div className={`grid grid-cols-[auto,1fr] w-full`}>
             {/* Image */}
@@ -38,7 +33,7 @@ export default function ShowProducts({product} : {product: Products}) {
                 <span className="text-xs text-gray-800">Upto 5% back with the <b className="text-[#4390C7]">YashERA</b> card</span>
                 <span className="text-xs text-gray-800">FREE delivery till <b>{getFreeDeliveryTill(id)}</b></span>
                 <button className="bg-[#466EC3] text-white w-fit px-2 py-1 rounded-full hover:shadow-md hover:bg-opacity-80 mt-2 font-medium"
-                        onClick={()=>addToCart(product)}>Add to cart</button>
+                        onClick={()=>dispatch?.({type: "ADD_ITEM", payload: product})}>Add to cart</button>
             </div>
     </div>
   );
