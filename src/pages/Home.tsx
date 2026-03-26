@@ -14,7 +14,7 @@ function Hero() {
       <p className="text-gray-500 text-lg mb-5 max-w-xl">
         Discover thousands of products across fashion, tech, home and more — all in one place, with fast delivery and easy returns.
       </p>
-      <Link to={"/products"}><button className="bg-[#463F3A] text-[white] px-6 py-3 rounded-full hover:opacity-80">
+      <Link to={"/products"}><button className="bg-black text-[white] px-6 py-3 rounded-full hover:opacity-80">
         Browse Products</button></Link>
     </section>
   )
@@ -22,7 +22,7 @@ function Hero() {
 
 export default function HomePage({}) {
   return (
-    <div className="bg-[#F4F3EE]">
+    <div className="bg-[#E5E5E5]">
       <NavBar/>
       <Hero />
     </div>

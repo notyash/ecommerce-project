@@ -1,8 +1,8 @@
 import { Link, useLocation } from "react-router";
 import { NavItem as TNavItem } from "../types";
 
-const active_style = "bg-[#463F3A] text-white"
-const sign_in_styles = "absolute right-6 text-white bg-[#463F3A] hover:text-white"
+const active_style = "bg-[#466EC3] text-white font-bold"
+const sign_in_styles = "bg-[#466EC3] border border-[#14213D] absolute right-6 text-white hover:text-white"
 const navItems = [
   { label: "Home", path: "/" },
   { label: "Products", path: "/products" },
@@ -14,8 +14,8 @@ const navItems = [
 
 export function NavItem({ children, styles = ""}: TNavItem) {
     return (
-        <div className={`border border-black rounded-lg p-3 m-1 hover:shadow-md hover:shadow-black/50
-                 hover:bg-[#463F3A] hover:text-white transition-all duration-500 ${styles}`}>
+        <div className={`rounded-lg p-3 m-1 hover:shadow-md hover:shadow-[#14213D]/50
+                 hover:bg-[#466EC3] text-white font-bold transition-all duration-500 ${styles}`}>
             {children}
         </div>
     )
@@ -24,8 +24,8 @@ export function NavItem({ children, styles = ""}: TNavItem) {
 export default function NavBar() {
     const {pathname} = useLocation();
     return (
-        <nav className="fixed top-0 left-0 w-full z-10 bg-[#E0AFA0]">
-            <Link to={"/"}><img src="/Pi7_xre_logo.png" className="mt-1 absolute left-6 h-20 w-auto" /></Link>
+        <nav className="fixed top-0 left-0 w-full z-10 bg-black">
+            <Link to={"/"}><img src="/xre_logo.png" className="mt-1 absolute left-6 h-20 w-auto" /></Link>
             <div className="flex justify-center gap-8 p-4">
                 {navItems.map((item) => 
                 <Link to={item.path} key={item.path}>
