@@ -6,7 +6,8 @@ export type Products = {
   image?: string;
   description?: string;
   rating?: { rate: string; count: string };
-  styles?: string
+  styles?: string;
+  quantity: number;
 };
 
 export type NavItem = {
@@ -21,5 +22,5 @@ export type FilteredData = {
 
 export type CartAction =  { type: 'ADD_ITEM'; payload: Products } | 
                           { type: 'REMOVE_ITEM'; payload: { id: string } } | 
-                          { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }|
+                          { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } } |
                           { type: 'CLEAR_CART' }

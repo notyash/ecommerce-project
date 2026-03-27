@@ -16,7 +16,7 @@ export default function ShowProducts({product} : {product: Products}) {
     return (
         <div className={`grid grid-cols-[auto,1fr] w-full`}>
             {/* Image */}
-            <div className={`group h-64 w-60 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 relative p-6 m-2 ml-8
+            <div className={`group h-64 w-64 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 p-5 m-2 ml-8
              bg-[#EBEBEB] overflow-hidden`}>
                 <img
                 className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"

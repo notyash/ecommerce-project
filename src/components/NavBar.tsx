@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router";
 import { NavItem as TNavItem } from "../types";
 
 const active_style = "bg-[#466EC3] text-white font-bold"
-const sign_in_styles = "bg-[#466EC3] border border-[#14213D] absolute right-6 text-white hover:text-white"
+const sign_in_styles = "bg-[#466EC3] border border-[#14213D] absolute right-6 text-white"
 const navItems = [
   { label: "Home", path: "/" },
   { label: "Products", path: "/products" },

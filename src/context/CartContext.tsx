@@ -21,12 +21,22 @@ export function CartProvider({children}: {children: React.ReactNode}){
 function cartReducer(cartItems: Products[], action: CartAction): Products[] {
     switch (action.type) {
         case 'ADD_ITEM': {
-            return [...cartItems, action.payload]
+            const existingItem = cartItems.find(item => item.id === action.payload.id)
+            if (existingItem) {
+                return cartItems
+            }
+            return [...cartItems, {...action.payload, quantity: 1}]
         }
         case 'REMOVE_ITEM': {
             return cartItems.filter(item =>  item.id !== action.payload.id)
         }
         // adding other actions are remaining
+        case 'UPDATE_QUANTITY': {
+            if (action.payload.quantity === 0) {
+                return cartItems.filter(item =>  item.id !== action.payload.id)
+            }
+            return cartItems.map(item => item.id == action.payload.id ? {...item, quantity: action.payload.quantity} : item)
+        }
         default:
             return cartItems
     }
