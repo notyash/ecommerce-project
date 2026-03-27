@@ -33,10 +33,12 @@ export function FilterMenu({productData}: {productData?: Products[]}) {
                 {categories.map(category => <label key={category.label} className="accent-[#466EC3] p-1 pl-6"><input type="checkbox" checked={
                 filter.includes(category.label)} onChange={() => toggleFilter(category.label)}/> {category.display_name}</label>)}
             </div>
+
             {/* {Produtcts Menu} */}
             <div className="flex flex-col flex-1">
                 {productsData}
             </div>
+            
             {/* Cart Menu */}
             <div className="flex flex-col w-96 sticky top-24 h-screen shrink-0 gap-1 pt-4 mr-5 bg-[#F9FAFC] shadow-[-2px_-8px_3px_rgba(0,0,0,0.1)]">
                 <div className="flex items-center pl-6 pr-6">
