@@ -6,7 +6,7 @@ const sign_in_styles = "bg-[#466EC3] border border-[#14213D] absolute right-6 te
 const navItems = [
   { label: "Home", path: "/" },
   { label: "Products", path: "/products" },
-  { label: "Developers", path: "/developers" },
+  { label: "🛒 Cart", path: "/cart" },
   { label: "Support", path: "/support" },
   { label: "Contact", path: "/contact" },
   { label: "Sign In", path: "/sign-in", type: "auth" },

@@ -20,7 +20,7 @@ function Hero() {
   )
 }
 
-export default function HomePage({}) {
+export default function HomePage() {
   return (
     <div className="bg-[#E5E5E5]">
       <NavBar/>

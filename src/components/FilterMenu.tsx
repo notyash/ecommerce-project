@@ -24,11 +24,11 @@ export function FilterMenu({productData}: {productData?: Products[]}) {
     const listOfAddedItems = cartItems.map(item => <ShowAddedToCart item={item}/>)
 
     return (
-        <div className="flex bg-[#FFFFFF] pt-24">        
+        <div className="flex bg-white pt-24">        
             {/* {Filter Menu} */}
-            <div className="flex flex-col w-64 sticky top-24 h-screen shrink-0 gap-1 pt-4 ml-5 bg-[#EBEBEB]">
+            <div className="flex flex-col w-64 sticky top-24 h-screen shrink-0 gap-1 pt-4 ml-5 bg-[#F1F3F6] shadow-md">
                 <h1 className="font-semibold pl-6 text-xl">Filters</h1>
-                <hr className="border-gray-300 my-3 w-full mt-4 mb-4"></hr>
+                <hr className="mx-auto border-gray-300 my-3 w-56 mt-4 mb-4"></hr>
                 <h2 className="font-semibold mb-3 pl-6">Categories:</h2>
                 {categories.map(category => <label key={category.label} className="accent-[#466EC3] p-1 pl-6"><input type="checkbox" checked={
                 filter.includes(category.label)} onChange={() => toggleFilter(category.label)}/> {category.display_name}</label>)}
@@ -38,14 +38,14 @@ export function FilterMenu({productData}: {productData?: Products[]}) {
             <div className="flex flex-col flex-1">
                 {productsData}
             </div>
-            
+
             {/* Cart Menu */}
-            <div className="flex flex-col w-96 sticky top-24 h-screen shrink-0 gap-1 pt-4 mr-5 bg-[#F9FAFC] shadow-[-2px_-8px_3px_rgba(0,0,0,0.1)]">
+            <div className="flex flex-col w-96 sticky top-24 h-screen shrink-0 gap-1 pt-4 mr-5 bg-[#F1F3F6] shadow-md">
                 <div className="flex items-center pl-6 pr-6">
-                    <h1 className="font-semibold text-xl">Shopping Cart </h1>
+                    <h1 className="font-semibold text-xl hover:bg-[#EBEBEB] p-2">Shopping Cart </h1>
                     <section className="flex items-center justify-center ml-auto bg-[#466EC3] w-7 h-7 rounded-full text-white">{cartItems.length}</section>
                 </div>
-                <hr className="border-gray-300 my-3 w-full mt-4 mb-4"></hr>
+                <hr className="mx-auto border-gray-300 my-3 w-80 mt-4 mb-4"></hr>
                 <ul className="flex flex-col pl-6">
                     {listOfAddedItems}
                 </ul>
@@ -81,7 +81,7 @@ function ShowAddedToCart({item}: {item: Products}){
                 <div className="flex">
                     <QuantityControl onClick={() => dispatch?.({type:"UPDATE_QUANTITY", payload:{id: item.id, quantity: item.quantity - 1}})}>-</QuantityControl>
                     <QuantityControl styles="mx-auto">{item.quantity}</QuantityControl>
-                    <QuantityControl onClick={() => dispatch?.({type: "UPDATE_QUANTITY", payload: {id: item.id, quantity: item.quantity  + 1}})}>-</QuantityControl>
+                    <QuantityControl onClick={() => dispatch?.({type: "UPDATE_QUANTITY", payload: {id: item.id, quantity: item.quantity  + 1}})}>+</QuantityControl>
                 </div>
             </li> 
     )
