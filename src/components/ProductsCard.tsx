@@ -3,7 +3,7 @@ import { CartDispatchContext } from "../context/CartContext";
 import { Products } from "../types";
 import { getFreeDeliveryTill, getRandomBought } from "../utils/utils";
 
-export default function ShowProducts({product} : {product: Products}) {
+export function ShowProducts({product} : {product: Products}) {
     const {
       id,
       title,
@@ -37,4 +37,15 @@ export default function ShowProducts({product} : {product: Products}) {
             </div>
     </div>
   );
+}
+
+export default function ProductsMenu({productData, filter}: {productData?: Products[], filter:string[]}) {
+      const filteredData = productData?.filter((data: Products) => filter.length > 0 ? filter.includes(data.category ?? "") : true)
+      const productsData = filteredData?.map((product:Products) => (<ShowProducts product={product} key={product.id}></ShowProducts>))
+
+  return (
+          <div className="flex flex-col flex-1">
+              {productsData}
+          </div>
+  )
 }
