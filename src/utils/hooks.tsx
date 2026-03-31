@@ -1,16 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { Products } from "../types";
 
+
 export function useGetData() {
         const { data: productData, isLoading, isError} = useQuery<Products[]>({
         queryKey: ['products'], 
         queryFn: async ({ signal }) => {
-                                        const res = await fetch('https://fakestoreapi.com/products', { signal })
+                                        const res = await fetch('https://dummyjson.com/products', { signal })
                                         if (!res.ok) throw new Error('Failed to fetch products')
                                         return res.json()
                                         },
         staleTime: Infinity
         })
+        console.log(productData )
         return {productData, isLoading, isError}
 }
 
