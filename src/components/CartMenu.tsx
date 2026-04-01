@@ -21,7 +21,7 @@ export default function CartMenu() {
     }
 
 function ShowAddedToCart({item}: {item: Products}){
-    const dispatch = useContext(CartDispatchContext)
+    const setCartID = useContext(CartDispatchContext)
 
     return (
             <li className="grid grid-cols-[auto,1fr] w-full pb-3">
@@ -37,9 +37,9 @@ function ShowAddedToCart({item}: {item: Products}){
                 </div>
                 {/* Quantity */}
                 <div className="flex">
-                    <QuantityControl onClick={() => dispatch?.({type:"UPDATE_QUANTITY", payload:{id: item.id, quantity: item.quantity - 1}})}>-</QuantityControl>
+                    <QuantityControl onClick={() => setCartID?.({type:"UPDATE_QUANTITY", payload:{id: item.id, quantity: item.quantity - 1}})}>-</QuantityControl>
                     <QuantityControl styles="mx-auto">{item.quantity}</QuantityControl>
-                    <QuantityControl onClick={() => dispatch?.({type: "UPDATE_QUANTITY", payload: {id: item.id, quantity: item.quantity  + 1}})}>+</QuantityControl>
+                    <QuantityControl onClick={() => setCartID?.({type: "UPDATE_QUANTITY", payload: {id: item.id, quantity: item.quantity  + 1}})}>+</QuantityControl>
                 </div>
             </li> 
     )
@@ -54,3 +54,16 @@ function QuantityControl({children, onClick, styles=""}: { children: React.React
     )
 }
 
+export function ProductsInCart({data} : {data?: Products}){
+    return (
+        <div className="grid grid-cols-[auto,1fr] pt-24">
+            {data?.title}
+            {/* <div className="mx-auto">
+                {data}
+            </div>
+            <div className="">
+                hi
+            </div> */}
+        </div>
+    )
+}

@@ -1,5 +1,5 @@
 
-export function getRandomBought(id : string) {
+export function getRandomBought(id : number) {
     const randomBoughtExists = localStorage.getItem(`${id}-randomBought`)
     if (randomBoughtExists) {
         return randomBoughtExists
@@ -9,7 +9,7 @@ export function getRandomBought(id : string) {
     return newRandomBought
 }
 
-export function getFreeDeliveryTill(id : string) {
+export function getFreeDeliveryTill(id : number) {
     const deliveryDayExists = localStorage.getItem(`${id}-freeDeliveryUntil`)
     if (deliveryDayExists) {
         return deliveryDayExists

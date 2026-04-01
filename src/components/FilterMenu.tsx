@@ -1,11 +1,28 @@
-
-
-
 const categories = [
-    {label: "men's clothing", display_name: "Men's Clothing"},
-    {label: "women's clothing", display_name: "Women's Clothing"},
-    {label: "jewelery", display_name: "Jewelry"},
-    {label: "electronics", display_name: "Electronics"}
+    {label: "beauty", display_name: "Beauty"},
+    {label: "fragrances", display_name: "Fragrances"},
+    {label: "furniture", display_name: "Furniture"},
+    {label: "groceries", display_name: "Groceries"},
+    {label: "home-decoration", display_name: "Home Decoration"},
+    {label: "kitchen-accessories", display_name: "Kitchen Accessories"},
+    {label: "laptops", display_name: "Laptops"},
+    {label: "mens-shirt", display_name: "Mens Shirt"},
+    {label: "mens-shoes", display_name: "Mens Shoes"},
+    {label: "mens-watches", display_name: "Mens watches"},
+    {label: "mobile-accessories", display_name: "Mobile Accessories"},
+    {label: "motorcycle", display_name: "Motorcycle"},
+    {label: "skin-care", display_name: "Skin Care"},
+    {label: "smartphones", display_name: "Smartphones"},
+    {label: "sports-accessories", display_name: "Sports Accessories"},
+    {label: "sunglasses", display_name: "Sunglasses"},
+    {label: "tablets", display_name: "Tablets"},
+    {label: "tops", display_name: "Tops"},
+    {label: "vehicle", display_name: "Vehicle"},
+    {label: "womens-bags", display_name: "Womens Bags"},
+    {label: "womens-dresses", display_name: "Womens Dresses"},
+    {label: "womens-jewellery", display_name: "Womens Jewellery"},
+    {label: "womens-shoes", display_name: "Womens Shoes"},
+    {label: "womens-watches", display_name: "Womens Watches"},
 ]
 
 export function FilterMenu({filter, setFilter}: {filter: string[], setFilter: (value: string[]) => void}) {

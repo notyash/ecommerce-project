@@ -1,13 +1,40 @@
+export type Data = {
+  limit?: number
+  products: Products[] 
+}
+
+export type Carts = {
+  carts: Products[]
+}
+
+export type AddToCart = {
+  cartID: number
+  products: {id: number, quantity: number}[]
+}
+
+export type SavedCarts = {
+  id: number
+}
+
 export type Products = {
-  id: string;
-  title: string;
-  price?: string;
+  id: number;
+  availabilityStatus?: string;
   category?: string;
-  image?: string;
   description?: string;
-  rating?: { rate: string; count: string };
-  styles?: string;
-  quantity: number;
+  dimensions?: {depth: number, height: number, width: number};
+  discountPercentage?: number
+  images?: string[]
+  minimumOrderQuantity?: number
+  price?: number
+  rating?: number
+  returnPolicy?: string
+  reviews?: {rating: number, comment: string, date:string}[]
+  shippingInformation?: string
+  stock?: number
+  tags?: string[]
+  thumbnail?: string
+  title?: string
+  warrantyInformation?: string
 };
 
 export type NavItem = {
@@ -20,7 +47,6 @@ export type FilteredData = {
   setFilter?: (value: string) => void;
 }
 
-export type CartAction =  { type: 'ADD_ITEM'; payload: Products } | 
-                          { type: 'REMOVE_ITEM'; payload: { id: string } } | 
-                          { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } } |
+export type CartAction =  { type: 'ADD_ID'; payload: SavedCarts } | 
+                          { type: 'REMOVE_ID'; payload: { id: number } } |
                           { type: 'CLEAR_CART' }

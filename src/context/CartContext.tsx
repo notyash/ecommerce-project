@@ -1,16 +1,16 @@
-import React, { createContext, useReducer } from "react";
-import { CartAction, Products } from "../types";
+import React, { createContext, useReducer, useState } from "react";
+import { CartAction, Products, SavedCarts } from "../types";
 
 export const CartContext = createContext<Products[]>([])
 export const CartDispatchContext = createContext<React.Dispatch<CartAction> | null> (null)
 
-const initialCart:Products[] = []
+const initialCart:SavedCarts[] = []
 
 export function CartProvider({children}: {children: React.ReactNode}){
-    const [cartItems, dispatch] = useReducer(cartReducer, initialCart)
+    const [cartIDs, dispatch] = useReducer(cartReducer, initialCart)
 
     return (
-        <CartContext value={cartItems}>
+        <CartContext value={cartIDs}>
             <CartDispatchContext value={dispatch}>
                 {children}
             </CartDispatchContext>
@@ -18,26 +18,19 @@ export function CartProvider({children}: {children: React.ReactNode}){
     )
 }
 
-function cartReducer(cartItems: Products[], action: CartAction): Products[] {
+function cartReducer(cartIDs: SavedCarts[], action: CartAction): SavedCarts[] {
     switch (action.type) {
-        case 'ADD_ITEM': {
-            const existingItem = cartItems.find(item => item.id === action.payload.id)
+        case 'ADD_ID': {
+            const existingItem = cartIDs.find(item => item.id === action.payload.id)
             if (existingItem) {
-                return cartItems
+                return cartIDs
             }
-            return [...cartItems, {...action.payload, quantity: 1}]
+            return [...cartIDs, {...action.payload}]
         }
-        case 'REMOVE_ITEM': {
-            return cartItems.filter(item =>  item.id !== action.payload.id)
-        }
-        // adding other actions are remaining
-        case 'UPDATE_QUANTITY': {
-            if (action.payload.quantity === 0) {
-                return cartItems.filter(item =>  item.id !== action.payload.id)
-            }
-            return cartItems.map(item => item.id == action.payload.id ? {...item, quantity: action.payload.quantity} : item)
+        case 'REMOVE_ID': {
+            return cartIDs.filter(item =>  item.id !== action.payload.id)
         }
         default:
-            return cartItems
+            return cartIDs
     }
 }
