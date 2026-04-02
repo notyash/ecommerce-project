@@ -28,12 +28,9 @@ INVALID_TOKEN = HTTPException(status_code=401, detail='Invalid token!')
 
 class User(BaseModel):
     username: str
-    firstname: str | None = None
+    fullname: str | None = None
     gender: str | None = None
-    lastname: str | None = None
     age: int | None = None
-    phone_number: str | None = None
-    email: str | None = None
 
 class UserInfo(User):
     password: str

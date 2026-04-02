@@ -1,29 +1,3 @@
 {
-    "users": [
-        {
-            "firstname": "Yash",
-            "gender": "Male",
-            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$228qqHpOjlhRdQuV6Sx8xg$8XzGd7Cd+y+zbbFFmsuRyOf+yRQ4a9kg/LNj3N55l0E",
-            "id": 1,
-            "username": "yasheraa1"
-        },
-        {
-            "firstname": "Yash",
-            "gender": "Male",
-            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$jsE+wr5KB2dF5JQ6ky/Okg$3wZivSu8AJVBvNaOiG7rRZL3k7bMbtbhlLxDEHRSBWw",
-            "id": 2,
-            "username": "yasheraa"
-        },
-        {
-            "age": 21,
-            "email": "string",
-            "firstname": "Yash",
-            "gender": "Male",
-            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$didsu32MXb9jklM3jiH4OQ$3DBCHBjwrdRIf062Y6blcPbz0B3kyhAJvq4jab/5aLc",
-            "id": 3,
-            "lastname": "string",
-            "phone_number": "string",
-            "username": "yashd45"
-        }
-    ]
+    "users": []
 }
