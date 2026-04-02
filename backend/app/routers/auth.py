@@ -162,4 +162,4 @@ async def logout(token: str = Depends(oauth2_scheme)):
 
 @router.get("/protected")
 async def protected_route(payload: Annotated[TokenData, Depends(check_blacklist)]):
-    return {"message": "You're in", "user": payload.sub}
+    return {"message": "You're in", "user": payload.sub}    
