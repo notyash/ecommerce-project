@@ -43,9 +43,9 @@ async def create_product(product: CreateProduct):
     if productExists:
         raise HTTPException(status_code=409, detail=f'Product with id: {product.id} already exists!')
     
-    product = product.model_dump()
+    product = product.model_dump(exclude_none=True)
     data['products'].append(product)
-    save_data(data)
+    save_data('products', data)
     return product
 
 @router.put('/{product_id}')
@@ -60,7 +60,7 @@ async def update_product(product: UpdateProduct, product_id: int):
             item.update(product)
             break
         
-    save_data(data)
+    save_data('products', data)
     return productExists
 
 @router.delete('/{product_id}')
@@ -74,5 +74,5 @@ async def delete_product(product_id: int):
             data['products'].remove(item)
             break
     
-    save_data(data)    
+    save_data('products', data)    
     return productExists

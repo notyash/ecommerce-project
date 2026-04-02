@@ -25,7 +25,7 @@ export function useGetDataById(productID: number) {
                                         if (!res.ok) throw new Error('Failed to fetch products')
                                         return await res.json()
                                         },
-        staleTime: Infinity,
+        staleTime: Infinity,    
         enabled: !!productID
         })
         return {productData, isLoading, isError}

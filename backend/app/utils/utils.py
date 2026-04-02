@@ -1,6 +1,11 @@
 import json
 
-def save_data(changes):
-    with open('../data/products.json', 'w') as file:
+def save_data(file_name, changes):
+    with open(f'../data/{file_name}.json', 'w') as file:
         json.dump(changes, file, indent=4, sort_keys=True)   
     
+def get_data(file_name):
+    with open(f'../data/{file_name}.json', 'r') as file:
+        data = json.load(file)
+    return data
+
