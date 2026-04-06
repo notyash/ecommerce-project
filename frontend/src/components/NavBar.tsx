@@ -2,24 +2,24 @@ import { Link, useLocation } from "react-router";
 import { NavItem as TNavItem } from "../types";
 
 const active_style = "bg-[#466EC3] text-white font-bold"
-const sign_in_styles = "bg-[#466EC3] border border-[#14213D] absolute right-6 text-white"
 const navItems = [
   { label: "Home", path: "/" },
   { label: "Products", path: "/products" },
   { label: "🛒 Cart", path: "/cart" },
   { label: "Support", path: "/support" },
   { label: "Contact", path: "/contact" },
-  { label: "Sign In", path: "/sign-in", type: "auth" },
+  { label: "Sign In", path: "/sign-in", type: "auth", first_render: false },
 ]
 
-export function NavItem({ children, styles = ""}: TNavItem) {
+export function NavItem({ children, styles = "", path}: TNavItem) {
+    const base = `rounded-lg p-3 m-1 hover:shadow-md hover:shadow-[#14213D]/50 
+                  hover:bg-[#466EC3] text-white font-bold transition-all duration-500 ${styles}`;
     return (
-        <div className={`rounded-lg p-3 m-1 hover:shadow-md hover:shadow-[#14213D]/50
-                 hover:bg-[#466EC3] text-white font-bold transition-all duration-500 ${styles}`}>
+        <div className={`${base} ${path === "/sign-in" ? "absolute right-6" : ""}`}>
             {children}
         </div>
     )
-    } 
+} 
 
 export default function NavBar() {
     const {pathname} = useLocation();
@@ -29,7 +29,7 @@ export default function NavBar() {
             <div className="flex justify-center gap-8 p-4">
                 {navItems.map((item) => 
                 <Link to={item.path} key={item.path}>
-                    <NavItem styles={item.type === "auth" ? sign_in_styles : pathname === item.path ? active_style : ''}>{item.label}</NavItem>
+                    <NavItem path={item.path} styles={pathname === item.path ? active_style : ''}>{item.label}</NavItem>
                 </Link>
                 )}
             </div>

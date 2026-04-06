@@ -17,7 +17,7 @@ class AddToCart(BaseModel):
 class UpdateCart(BaseModel):
     id: int
 
-with open('../data/carts.json') as file:
+with open('./data/carts.json') as file:
     data = json.load(file)
 
 @router.post('/{cart_id}')

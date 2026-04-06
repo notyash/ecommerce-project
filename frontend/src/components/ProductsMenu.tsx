@@ -16,6 +16,7 @@ export function ShowProducts({product} : {product: Products}) {
 
     const cart = useMutateCart()
     const cartIDs = useContext(CartContext)
+    
     return (
         <div className={`grid grid-cols-[auto,1fr] w-full`}>
             {/* Image */}
@@ -42,7 +43,7 @@ export function ShowProducts({product} : {product: Products}) {
   );
 }
 
-export default function ProductsMenu({products, filter}: {products?: Products[], filter:string[]}) {
+export default function     ProductsMenu({products, filter}: {products?: Products[], filter:string[]}) {
       const filteredData = products?.filter((data: Products) => filter.length > 0 ? filter.includes(data.category ?? "") : true)
       const productsData = filteredData?.map((product:Products) => (<ShowProducts product={product} key={product.id}></ShowProducts>))
   return (

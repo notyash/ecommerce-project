@@ -23,7 +23,7 @@ class UpdateProduct(BaseModel):
     rating: float | None = None
     thumbnail: str | None = None
 
-with open('../data/products.json', 'r') as file:
+with open('./data/products.json', 'r') as file:
     data =  json.load(file)
 
 @router.get('/')

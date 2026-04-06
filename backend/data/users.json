@@ -1,3 +1,16 @@
 {
-    "users": []
+    "users": [
+        {
+            "disabled": false,
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$0tN0Ajv7jA6nd6XXJ9UHqw$LYJlPfRoSDIaTK2vv8HV7efRLgCoFM72BzQHXTBfjLc",
+            "id": 1,
+            "username": "yash"
+        },
+        {
+            "disabled": false,
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$ThSX74fE+8+z5TA+8ORaOQ$7P0IuXmm9QKpMjHzBX8PURZuQGMQfM7U1gX25yndEVI",
+            "id": 2,
+            "username": "yashishim"
+        }
+    ]
 }

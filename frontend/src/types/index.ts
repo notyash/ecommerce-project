@@ -40,6 +40,7 @@ export type Products = {
 export type NavItem = {
   children: React.ReactNode;
   styles?: string;
+  path: string;
 };
 
 export type FilteredData = {

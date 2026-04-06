@@ -7,6 +7,7 @@ import ContactsPage from "./pages/Contact";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { CartProvider } from "./context/CartContext";
+import LoginPage from "./pages/Login";
 
 const queryClient = new QueryClient()
 
@@ -20,7 +21,7 @@ function App() {
               <Route path="/cart" element={<CartPage />} />
               <Route path="/support" element={<SupportPage />} />
               <Route path="/contact" element={<ContactsPage />} />
-              <Route path="/sign-in" element={<ContactsPage />} />
+              <Route path="/sign-in" element={<LoginPage />} />
           </Routes>
         </CartProvider>
 
