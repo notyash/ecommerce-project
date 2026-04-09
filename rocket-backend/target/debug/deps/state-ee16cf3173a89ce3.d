@@ -1,0 +1,12 @@
+/projects/ecommerce-project/rocket-backend/target/debug/deps/state-ee16cf3173a89ce3.d: /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/lib.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/ident_hash.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/cell.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/init.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/shim.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/type_map.rs
+
+/projects/ecommerce-project/rocket-backend/target/debug/deps/libstate-ee16cf3173a89ce3.rlib: /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/lib.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/ident_hash.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/cell.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/init.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/shim.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/type_map.rs
+
+/projects/ecommerce-project/rocket-backend/target/debug/deps/libstate-ee16cf3173a89ce3.rmeta: /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/lib.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/ident_hash.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/cell.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/init.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/shim.rs /home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/type_map.rs
+
+/home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/lib.rs:
+/home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/ident_hash.rs:
+/home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/cell.rs:
+/home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/init.rs:
+/home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/shim.rs:
+/home/yash/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/state-0.6.0/src/type_map.rs:
