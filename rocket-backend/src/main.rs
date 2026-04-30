@@ -1,4 +1,5 @@
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
 mod config;
 mod db;
@@ -8,17 +9,17 @@ mod models;
 mod routes;
 mod guards;
 
-use dotenv::dotenv;
+use config::Config;
 
 #[launch]
 async fn rocket() -> _ {
-    dotenv().ok();
-
-    let pool = db::init_pool().await.expect("Failed to connect to DB");
+    let config = Config::from_env();
+    let pool = db::connect(&config.database_url).await;
 
     rocket::build()
         .manage(pool)
-        .mount("/auth", routes::auth::routes())
-        .mount("/users", routes::users::routes())
+        .manage(config)
+        // .mount("/auth", routes::auth::routes())
+        // .mount("/users", routes::users::routes())
         .mount("/products", routes::products::routes())
 }
