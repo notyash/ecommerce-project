@@ -11,14 +11,7 @@ mod guards;
 mod fairings;
 
 use config::Config;
-use rocket::http::Status;
-
 use crate::fairings::CorsFairing;
-
-#[options("/<_..>")]
-fn options() -> Status {
-    Status::NoContent
-}
 
 #[get("/")]
 fn index() -> &'static str {
@@ -35,9 +28,9 @@ async fn rocket() -> _ {
         .manage(config)
         // .mount("/auth", routes::auth::routes())
         // .mount("/users", routes::users::routes())
-        .mount("/", routes![index, options])
+        .mount("/", routes![index])
         .mount("/products", routes::products::routes())
         .attach(CorsFairing::new(&[
-            "http://localhost:5173/"
+            "http://127.0.0.1:5173", "http://localhost:5173"
         ]))
 }

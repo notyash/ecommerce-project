@@ -52,11 +52,13 @@ impl Fairing for CorsFairing {
 
         if request.method() == Method::Options {
             response.set_status(Status::NoContent);
-            response.set_header(Header::new("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"));
-            response.set_header(Header::new("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept"));
-            response.set_header(Header::new("Access-Control-Max-Age", "3600"));
-        }
+            
+            response.set_header(Header::new("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS"));
+            response.set_header(Header::new("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, X-Requested-With"));
+            response.set_header(Header::new("Access-Control-Max-Age", "86400"));
 
+            response.set_sized_body(0, std::io::Cursor::new(""));
+        }
     }
 
 }
