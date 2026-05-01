@@ -46,8 +46,6 @@ target/
 # SQLx
 .sqlx/
 
-# Lock file (binary crate)
-Cargo.lock
 
 # Test files
 test.py
