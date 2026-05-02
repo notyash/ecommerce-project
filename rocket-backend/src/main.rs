@@ -26,7 +26,7 @@ async fn rocket() -> _ {
     rocket::build()
         .manage(pool)
         .manage(config)
-        // .mount("/auth", routes::auth::routes())
+        .mount("/auth", routes::auth::routes())
         // .mount("/users", routes::users::routes())
         .mount("/", routes![index])
         .mount("/products", routes::products::routes())

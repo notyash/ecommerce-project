@@ -19,3 +19,4 @@ thiserror = "1"
 anyhow = "1"
 dotenvy = "0.15"
 bigdecimal = { version = "0.3", features = ["serde"] }
+reqwest = { version = "0.11", features = ["json"], default-features = true}

@@ -6,5 +6,5 @@ export const Route = createFileRoute("/")({
 })
 
 function IndexComponent() {
-  return <HomePage/>
+    return <HomePage></HomePage>
 }
