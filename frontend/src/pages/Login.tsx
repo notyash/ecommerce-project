@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useNavigate } from "@tanstack/react-router";
 import NavBar from "../components/NavBar";
 import {useForm} from "react-hook-form"
 
@@ -16,7 +16,7 @@ export default function LoginPage() {
         console.log(data)
         if (res.ok) {
         localStorage.setItem('token', data.access_token);
-        navigate('/');
+        navigate({to: "/"});
         }
     }
     
