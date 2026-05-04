@@ -1,35 +1,12 @@
-import { useNavigate } from "@tanstack/react-router";
-import NavBar from "../components/NavBar";
-import {useForm} from "react-hook-form"
-import { GoogleOAuthProvider, GoogleLogin, useGoogleLogin } from '@react-oauth/google';
-import axios from "axios";
+import { useGoogleOAuthLogin } from "../utils/hooks";
 
 
 export default function LoginPage() {
-    const googleLogin = useGoogleLogin({
-        flow: 'auth-code',
-        onSuccess: async (codeResponse) => {
-            console.log(codeResponse);
-            const tokens = await fetch(
-                'http://localhost:8000/auth/oauth', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    method: 'POST',
-                    body: JSON.stringify({code: codeResponse.code}),
-                });
-            if (tokens.ok) {
-                console.log(await tokens.json());
-            } else {
-                console.log("error")
-            }
-        },
-        onError: errorResponse => console.log(errorResponse),
-    });
+  const googleLogin = useGoogleOAuthLogin();
   return (
     <div>
-        <button onClick={googleLogin}>GOOGLE OAUTH</button>
-    </div>
+        <button className="border-black-300" onClick={googleLogin}>GOOGLE OAUTH</button>
+    </div> 
   );
 
     // const {register, handleSubmit, formState: {errors}} = useForm({defaultValues:{username:"", password: ""}})

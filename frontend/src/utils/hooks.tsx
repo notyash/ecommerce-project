@@ -1,8 +1,32 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Data, Products, AddToCart as TAddToCart } from "../types";
+import { Products, AddToCart as TAddToCart } from "../types";
 import { useContext } from "react";
 import { CartDispatchContext } from "../context/CartContext";
+import { useGoogleLogin } from "@react-oauth/google";
 
+export function useGoogleOAuthLogin(){
+    const googleLogin = useGoogleLogin({
+        flow: 'auth-code',
+        onSuccess: async (codeResponse) => {
+            console.log(codeResponse);
+            const tokens = await fetch(
+                'http://localhost:8000/auth/oauth', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                    body: JSON.stringify({code: codeResponse.code}),
+                });
+            if (tokens.ok) {
+                console.log("OAuth code retrieved.");
+            } else {
+                console.log("Could not retrieve the OAuth code.")
+            }
+        },
+        onError: errorResponse => console.log(errorResponse),
+    });
+    return googleLogin
+}
 
 export function useGetData() {
         const { data: productsData, isLoading, isError} = useQuery<Products[]>({
