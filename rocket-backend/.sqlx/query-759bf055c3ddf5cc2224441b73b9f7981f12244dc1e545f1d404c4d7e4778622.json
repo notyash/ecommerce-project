@@ -1,0 +1,152 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM products ORDER BY created_at DESC",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "stock",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 6,
+        "name": "category",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "brand",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "rating",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 9,
+        "name": "discount_percentage",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 10,
+        "name": "thumbnail",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "images",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 12,
+        "name": "tags",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 13,
+        "name": "reviews",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 14,
+        "name": "minimum_order_quantity",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 15,
+        "name": "availability_status",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 16,
+        "name": "return_policy",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 17,
+        "name": "warranty_information",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 18,
+        "name": "shipping_information",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 19,
+        "name": "dimensions",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 20,
+        "name": "meta",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 21,
+        "name": "sku",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 22,
+        "name": "weight",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "759bf055c3ddf5cc2224441b73b9f7981f12244dc1e545f1d404c4d7e4778622"
+}
