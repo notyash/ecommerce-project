@@ -43,9 +43,5 @@ target/
 # Environment
 .env.production
 
-# SQLx
-.sqlx/
-
-
 # Test files
 test.py
