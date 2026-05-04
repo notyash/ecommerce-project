@@ -9,23 +9,34 @@ mod models;
 mod routes;
 mod guards;
 mod fairings;
+mod utils;
 
 use config::Config;
-use crate::fairings::CorsFairing;
+use reqwest::Client;
+use crate::{db::DbPool, fairings::CorsFairing};
 
 #[get("/")]
 fn index() -> &'static str {
     "Hello Yash"
+}
+struct AppState {
+    pool: DbPool,
+    config: Config,
+    client: Client,
 }
 
 #[launch]
 async fn rocket() -> _ {
     let config = Config::from_env();
     let pool = db::connect(&config.database_url).await;
+    let client = Client::new();
 
     rocket::build()
-        .manage(pool)
-        .manage(config)
+        .manage(AppState {
+            pool, 
+            config,
+            client,
+        })
         .mount("/auth", routes::auth::routes())
         // .mount("/users", routes::users::routes())
         .mount("/", routes![index])

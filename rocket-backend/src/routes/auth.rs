@@ -1,22 +1,20 @@
-use std::{collections::HashMap};
-use rocket::{State, serde::json::Json};
-use crate::{config::Config, dto::auth::OAuth};
+use rocket::{State, response::status::NotFound, serde::json::Json};
+use crate::{AppState, dto::auth::{GoogleResponse, JWT, OAuthCode}, errors::{AppError, OAuthExchangeError}, utils::exchange_code_to_token};
+
 
 pub fn routes() -> Vec<rocket::Route> {
     routes![oauth]
 }
 
 #[post("/oauth", data="<code>")]
-async fn oauth(code: Json<OAuth>, config: &State<Config>) -> String {
-    let mut params: HashMap<&str, &str> = HashMap::new();
+async fn oauth(code: Json<OAuthCode>, state: &State<AppState>) -> Result<Json<JWT>, AppError> {
+    // into_inner just looks at the AuthCode from the Json<AuthCode>
     let oauth = code.into_inner().code;
-    params.insert("code", &oauth);
-    params.insert("client_secret", &config.oauth_secret);
-    params.insert("client_id", &config.oauth_client);
-    params.insert("redirect_uri", &config.oauth_redirect_uri);
-    params.insert("grant_type", "authorization_code");
+    let token = match exchange_code_to_token(oauth, state.inner()).await {
+        Ok(t) => t,
+        Err(e) => return Err(NotFound(format!("Failed to exchange oauth code {:?}", e)))
+    };
+  
+    Err(NotFound("for".into()))
 
-    let response = reqwest::Client::new().post("https://oauth2.googleapis.com/token").form(&params).send().await;
-    println!("{:?}", response.unwrap().text().await.unwrap());
-    "hi".to_string()
 }
