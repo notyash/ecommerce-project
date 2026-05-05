@@ -10,11 +10,8 @@ pub fn routes() -> Vec<rocket::Route> {
 async fn oauth(code: Json<OAuthCode>, state: &State<AppState>) -> Result<Json<JWT>, AppError> {
     // into_inner just looks at the AuthCode from the Json<AuthCode>
     let oauth = code.into_inner().code;
-    let token = match exchange_code_to_token(oauth, state.inner()).await {
-        Ok(t) => t,
-        Err(e) => return Err(NotFound(format!("Failed to exchange oauth code {:?}", e)))
-    };
+    let token = exchange_code_to_token(oauth, state.inner()).await?;
   
-    Err(NotFound("for".into()))
+    Ok(Json(JWT { token }))
 
 }

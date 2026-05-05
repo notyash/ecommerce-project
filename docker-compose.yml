@@ -1,0 +1,49 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app # syncs local code to container code
+      - /app/node_modules # anonymous Docker volume - excludes from syncing as no left side is given ?:... 
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+  backend:
+    build: 
+      context: ./rocket-backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./rocket-backend:/app # syncs local code to container code
+      - cargo_cache:/usr/local/cargo/registry # Docker managed volume as doesn't start with ./ or /
+      - target_cache:/app/target # Docker managed volume as doesn't start with ./ or /
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Docker managed volume as doesn't start with ./ or /
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yash -d ecommerce"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  cargo_cache:
+  target_cache:

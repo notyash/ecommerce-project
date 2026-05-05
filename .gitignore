@@ -45,3 +45,6 @@ target/
 
 # Test files
 test.py
+
+.tanstack
+backup.sql
