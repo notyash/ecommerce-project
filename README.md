@@ -17,5 +17,5 @@ docker compose logs -f backend  # debug backend
  
 ## Stack
 - Frontend: React + TypeScript + TailwindCSS + Tanstack START
-- Backend: Main: Rocket.rs (Rust) Basic: Python
+- Backend: Main - Rocket.rs (Rust) Initial - Python
 - Database: PostgreSQL
