@@ -25,8 +25,8 @@ struct AppState {
     client: Client,
 }
 
-#[launch]
-async fn rocket() -> _ {
+#[rocket::main]
+async fn main() {
     let config = Config::from_env();
     let pool = db::connect(&config.database_url).await;
     let client = Client::new();
@@ -44,4 +44,7 @@ async fn rocket() -> _ {
         .attach(CorsFairing::new(&[
             "http://127.0.0.1:5173", "http://localhost:5173"
         ]))
+        .launch()
+        .await
+        .unwrap();
 }
