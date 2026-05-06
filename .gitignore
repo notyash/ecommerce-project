@@ -35,7 +35,8 @@ Thumbs.db
 __pycache__/
 *.pyc
 *.pyo
-venv/
+backend/venv
+venv
 
 # Rust
 target/
