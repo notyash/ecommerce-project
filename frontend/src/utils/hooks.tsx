@@ -18,9 +18,9 @@ export function useGoogleOAuthLogin(){
                     body: JSON.stringify({code: codeResponse.code}),
                 });
             if (tokens.ok) {
-                console.log("OAuth code retrieved:" + await tokens.text());
+                console.log("JWT token:" + await tokens.text());
             } else {
-                console.log("Could not retrieve the OAuth code.")
+                console.log("Could not retrieve the JWT token")
             }
         },
         onError: errorResponse => console.log(errorResponse),

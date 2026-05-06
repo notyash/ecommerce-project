@@ -4,6 +4,7 @@ pub struct Config {
     pub oauth_secret: String,
     pub oauth_client: String,
     pub oauth_redirect_uri: String,
+    pub jwks_uri: String,
 }
 
 impl Config {
@@ -15,6 +16,7 @@ impl Config {
                  oauth_client: std::env::var("OAUTH_CLIENT_ID").expect("OAUTH_CLIENT_ID must be set"),
                  oauth_secret: std::env::var("OAUTH_CLIENT_SECRET").expect("OAUTH_CLIENT_SECRET must be set"),
                  oauth_redirect_uri: std::env::var("OAUTH_REDIRECT_URI").expect("OAUTH_REDIRECT_URI must be set"),
+                 jwks_uri: std::env::var("JWKS_URI").expect("JWKS_URI must be set"),
         }
     }
 }

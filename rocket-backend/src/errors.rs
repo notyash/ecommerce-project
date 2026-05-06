@@ -9,20 +9,50 @@ fn default_catcher(status: Status, request: &Request) -> String {
     format!("Something went wrong while trying to access this url: '{}'\nStatus: {}", request.uri(), status.code)
 }
 
+#[derive(Error, Debug)]
+pub enum OAuthExchangeError {
+    // #[error] implements the Display trait and writes the string provided in the params for debugging
+    #[error("Network failure during OAuth Exchange: {0}")]
+    // #[from] implements the From trait for this variant so when using the ? operator in a function which returns this enum (Custom Error)
+    // knows how to convert the original error into this variant error by calling the .into() (twin of From) on it.
+    Network(#[from] reqwest::Error),
+
+    // Doesn't need #[from] because there isn't any official Error to convert from; just a String.
+    #[error("Google API Error: {0}")]
+    GoogleApiError(String),
+
+    #[error("Failed to parse token: {0}")]
+    ParseError(#[from] serde_json::Error)
+}
+
+#[derive(Error, Debug)]
+pub enum JwksError {
+    #[error("Network failure while fetching jwks: {0}")]
+    Network(#[from] reqwest::Error),
+
+    #[error("Failed to parse the jwks response: {0}")]
+    ParseError(#[from] serde_json::Error)
+}
+
 // Main station for ALL ERRORS
-#[derive(Debug)]
+#[derive(Error, Debug)]
 pub enum AppError {
-    OAuth(OAuthExchangeError),
-    // other errors
+    #[error(transparent)]
+    OAuth(#[from] OAuthExchangeError),
+
+    #[error(transparent)]
+    Jwk(#[from] JwksError),
+
+    #[error("Internal Server Error")]
     Internal, // Catches All Errors
 }
 
-// Used to convert OAuthExchangeError into the general AppError.
-impl From<OAuthExchangeError> for AppError {
-    fn from(err: OAuthExchangeError) -> Self {
-        AppError::OAuth(err)
-    }
-}
+// Used to convert OAuthExchangeError into the general AppError. #[from] macro does this for you
+// impl From<OAuthExchangeError> for AppError {
+//     fn from(err: OAuthExchangeError) -> Self {
+//         AppError::OAuth(err)
+//     }
+// }
 
 // Used to return status code and the JSON body to the frontend when AppError occurs
 impl <'r> Responder<'r, 'static> for AppError {
@@ -33,12 +63,19 @@ impl <'r> Responder<'r, 'static> for AppError {
         let (status, message) = match self {
             // ref is used instead of & to create a reference because inside match & is used to unpack/deref a value for pattern matching
             // ref - "I'm matching an owned value, but please don't move it; just give me a reference to it."
-            AppError::OAuth(ref auth_err) => { 
+            // (it was 'ref auth_err' before)
+            AppError::OAuth(auth_err) => { 
                 match auth_err { 
                     OAuthExchangeError::Network(_) => (Status::ServiceUnavailable, auth_err.to_string()),
                     // clone() because we dont own the 'msg' as auth_err is just a refernce to the OAuthExchangeError enum.
                     OAuthExchangeError::GoogleApiError(msg) => (Status::BadRequest, msg.clone()), 
-                    OAuthExchangeError::ParseError(_) => (Status::InternalServerError, "Auth data was malformed".to_string())
+                    OAuthExchangeError::ParseError(_) => (Status::InternalServerError, auth_err.to_string())
+                }
+            }
+            AppError::Jwk(jwk_err) => {
+                match jwk_err {
+                    JwksError::Network(_) => (Status::ServiceUnavailable, jwk_err.to_string()),
+                    JwksError::ParseError(_) => (Status::InternalServerError, jwk_err.to_string())
                 }
             }
             AppError::Internal => (Status::InternalServerError, "An unexpected error occurred".to_string()),
@@ -58,18 +95,3 @@ impl <'r> Responder<'r, 'static> for AppError {
 }
 
 
-#[derive(Error, Debug)]
-pub enum OAuthExchangeError {
-    // #[error] implements the Display trait and writes the string provided in the params for debugging
-    #[error("Network failure: {0}")]
-    // #[from] implements the From trait for this variant so when using the ? operator in a function which returns this enum (Custom Error)
-    // knows how to convert the original error into this variant error by calling the .into() (twin of From) on it.
-    Network(#[from] reqwest::Error),
-
-    // Doesn't need #[from] because there isn't any official Error to convert from; just a String.
-    #[error("Google API Error: {0}")]
-    GoogleApiError(String),
-
-    #[error("Failed to parse token: {0}")]
-    ParseError(#[from] serde_json::Error)
-}
