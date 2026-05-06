@@ -4,6 +4,7 @@ use thiserror::Error;
 use rocket::response::{self, Responder, Response};
 use serde_json::json;
 
+
 #[catch(default)]
 fn default_catcher(status: Status, request: &Request) -> String { 
     format!("Something went wrong while trying to access this url: '{}'\nStatus: {}", request.uri(), status.code)
@@ -16,11 +17,9 @@ pub enum OAuthExchangeError {
     // #[from] implements the From trait for this variant so when using the ? operator in a function which returns this enum (Custom Error)
     // knows how to convert the original error into this variant error by calling the .into() (twin of From) on it.
     Network(#[from] reqwest::Error),
-
     // Doesn't need #[from] because there isn't any official Error to convert from; just a String.
     #[error("Google API Error: {0}")]
     GoogleApiError(String),
-
     #[error("Failed to parse token: {0}")]
     ParseError(#[from] serde_json::Error)
 }
@@ -29,7 +28,6 @@ pub enum OAuthExchangeError {
 pub enum JwksError {
     #[error("Network failure while fetching jwks: {0}")]
     Network(#[from] reqwest::Error),
-
     #[error("Failed to parse the jwks response: {0}")]
     ParseError(#[from] serde_json::Error)
 }
@@ -43,8 +41,19 @@ pub enum AppError {
     #[error(transparent)]
     Jwk(#[from] JwksError),
 
+    #[error(transparent)]
+    Database(#[from] SqlErrors),
+
     #[error("Internal Server Error")]
     Internal, // Catches All Errors
+}
+
+#[derive(Error, Debug)]
+pub enum SqlErrors {
+    #[error("Database error: {0}")]
+    Sqlx(#[from] sqlx::Error),
+    #[error("Database constraint violated (e.g. duplicate email): {0}")]
+    ConstraintViolation(String)
 }
 
 // Used to convert OAuthExchangeError into the general AppError. #[from] macro does this for you
@@ -76,6 +85,12 @@ impl <'r> Responder<'r, 'static> for AppError {
                 match jwk_err {
                     JwksError::Network(_) => (Status::ServiceUnavailable, jwk_err.to_string()),
                     JwksError::ParseError(_) => (Status::InternalServerError, jwk_err.to_string())
+                }
+            }
+            AppError::Database(db_err) => {
+                match db_err {
+                    SqlErrors::ConstraintViolation(_) => (Status::Conflict, db_err.to_string()),
+                    SqlErrors::Sqlx(_) => (Status::InternalServerError, db_err.to_string()),
                 }
             }
             AppError::Internal => (Status::InternalServerError, "An unexpected error occurred".to_string()),

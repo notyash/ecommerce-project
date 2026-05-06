@@ -1,5 +1,5 @@
 use jsonwebtoken::{TokenData};
-use crate::{AppState, dto::auth::{AppClaims, GoogleClaims, GoogleResponse, JWT, Jwk, JwksResponse}, errors::{AppError, JwksError, OAuthExchangeError}};
+use crate::{AppState, dto::auth::{AppClaims, GoogleClaims, GoogleResponse, JWT, Jwk, JwksResponse}, errors::{AppError, JwksError, OAuthExchangeError, SqlErrors}};
 use serde::de::Error;
 
 
@@ -50,12 +50,9 @@ pub async fn fetch_jwks(state: &AppState) -> Result<JwksResponse, JwksError> {
     Ok(jwks)
 }
 
-pub fn generate_jwt(state: &AppState, token_data: TokenData<GoogleClaims>) -> Result<JWT, AppError> {
+pub fn generate_jwt(sub: i32, state: &AppState, email: String) -> Result<JWT, AppError> {
     let secret_key = &state.config.jwt_secret;
     let expiration = 3600;
-
-    let email = token_data.claims.email;
-    let sub = token_data.claims.sub;
 
     let claims = AppClaims {
         sub,
@@ -65,8 +62,8 @@ pub fn generate_jwt(state: &AppState, token_data: TokenData<GoogleClaims>) -> Re
     };
 
     let token = jsonwebtoken::encode(&jsonwebtoken::Header::default(), &claims,
-                                                                                 &jsonwebtoken::EncodingKey::from_secret(secret_key.as_ref()))
-                                                                                 .map_err(|_|AppError::Internal)?;
+&jsonwebtoken::EncodingKey::from_secret(secret_key.as_ref()))
+    .map_err(|_|AppError::Internal)?;
 
     Ok(JWT{token})
 }
@@ -91,4 +88,21 @@ pub fn verify_and_decode_google_jwt(state: &AppState, jwk_keys: Vec<Jwk>, id_tok
     let token_data  = jsonwebtoken::decode::<GoogleClaims>(&id_token, &decoding_key, &validation)
                                                                                     .map_err(|_| AppError::Internal)?;
     Ok(token_data)
+}
+
+pub async fn get_or_create_user(state: &AppState, google_id: &str, email: &str) -> Result<i32, SqlErrors> {
+    let result = sqlx::query!(
+        r#"
+        INSERT INTO users (google_id, email, role, is_active)
+        VALUES ($1, $2, 'user', true)
+        ON CONFLICT (email)
+        DO UPDATE SET google_id = EXCLUDED.google_id
+        RETURNING ID
+        "#,
+        google_id,
+        email
+    ).fetch_one(&state.pool)
+    .await?;
+
+    Ok(result.id)
 }

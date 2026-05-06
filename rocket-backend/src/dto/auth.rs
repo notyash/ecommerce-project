@@ -31,7 +31,7 @@ pub struct GoogleClaims { // of googles jwt token
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AppClaims { // of our own jwt token
-    pub sub: String,    
+    pub sub: i32,    
     pub email: String,
     pub exp: usize,     
     pub role: String,

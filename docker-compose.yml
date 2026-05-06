@@ -23,6 +23,8 @@ services:
       - ./rocket-backend:/app # syncs local code to container code
       - cargo_cache:/usr/local/cargo/registry # Docker managed volume as doesn't start with ./ or /
       - target_cache:/app/target # Docker managed volume as doesn't start with ./ or /
+    environment:
+      - DATABASE_URL=postgres://yash:yash123@db:5432/ecommerce
     env_file:
       - .env
     depends_on:
