@@ -1,0 +1,67 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO users (google_id, email, full_name, avatar_url, role, is_active)\n        VALUES ($1, $2, $3, $4, 'user', true)\n        ON CONFLICT (email)\n        DO UPDATE SET \n            google_id = COALESCE(users.google_id, EXCLUDED.google_id),\n            full_name = EXCLUDED.full_name,\n            avatar_url = EXCLUDED.avatar_url\n        RETURNING \n            id, \n            google_id as \"google_id?\", \n            email, \n            full_name, \n            avatar_url as \"avatar_url?\", \n            role, \n            is_active, \n            created_at\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "google_id?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "email",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "full_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "avatar_url?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "role",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "is_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 7,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Varchar",
+        "Varchar",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "d95032c4787520d0e98242815abac54c53948f6d606cf292f0368a402ced88ad"
+}

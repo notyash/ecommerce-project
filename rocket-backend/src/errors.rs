@@ -1,13 +1,22 @@
+use core::error;
+
 use rocket::Request;
 use rocket::http::Status;   
+use serde_json::Value;
 use thiserror::Error;
 use rocket::response::{self, Responder, Response};
-use serde_json::json;
-
+use rocket::serde::json::{Json, json};
 
 #[catch(default)]
-fn default_catcher(status: Status, request: &Request) -> String { 
-    format!("Something went wrong while trying to access this url: '{}'\nStatus: {}", request.uri(), status.code)
+pub fn default_catcher(status: Status, request: &Request) -> Json<serde_json::Value> {
+    Json(json!({
+        "error": {
+            "code": status.code,
+            "reason": status.reason_lossy(),
+            "path": request.uri().to_string(),
+            "message": "An unexpected error occurred."
+        }
+    }))
 }
 
 #[derive(Error, Debug)]
@@ -37,15 +46,20 @@ pub enum JwksError {
 pub enum AppError {
     #[error(transparent)]
     OAuth(#[from] OAuthExchangeError),
-
+    #[error(transparent)]
+    Authorization(#[from] AuthErrors),
     #[error(transparent)]
     Jwk(#[from] JwksError),
-
     #[error(transparent)]
     Database(#[from] SqlErrors),
-
     #[error("Internal Server Error")]
     Internal, // Catches All Errors
+}
+
+#[derive(Error, Debug)]
+pub enum AuthErrors {
+    #[error("Email not verified")]
+    UnverifiedEmail,
 }
 
 #[derive(Error, Debug)]
@@ -91,6 +105,11 @@ impl <'r> Responder<'r, 'static> for AppError {
                 match db_err {
                     SqlErrors::ConstraintViolation(_) => (Status::Conflict, db_err.to_string()),
                     SqlErrors::Sqlx(_) => (Status::InternalServerError, db_err.to_string()),
+                }
+            }
+            AppError::Authorization(err) => {
+                match err {
+                    AuthErrors::UnverifiedEmail => (Status::Unauthorized, err.to_string()),
                 }
             }
             AppError::Internal => (Status::InternalServerError, "An unexpected error occurred".to_string()),

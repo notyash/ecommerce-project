@@ -1,5 +1,5 @@
 use jsonwebtoken::{TokenData};
-use crate::{AppState, dto::auth::{AppClaims, GoogleClaims, GoogleResponse, JWT, Jwk, JwksResponse}, errors::{AppError, JwksError, OAuthExchangeError, SqlErrors}};
+use crate::{AppState, dto::auth::{AppClaims, GoogleClaims, GoogleResponse, Jwk, JwksResponse}, errors::{AppError, JwksError, OAuthExchangeError, SqlErrors}, models::user::User};
 use serde::de::Error;
 
 
@@ -50,22 +50,24 @@ pub async fn fetch_jwks(state: &AppState) -> Result<JwksResponse, JwksError> {
     Ok(jwks)
 }
 
-pub fn generate_jwt(sub: i32, state: &AppState, email: String) -> Result<JWT, AppError> {
+pub fn generate_jwt(sub: i32, state: &AppState, email: String, name: String, picture: String) -> Result<String, AppError> {
     let secret_key = &state.config.jwt_secret;
-    let expiration = 3600;
+    let duration = state.config.session_duration;
 
     let claims = AppClaims {
         sub,
         email,
-        exp: (chrono::Utc::now().timestamp() as usize) + expiration,
-        role: "user".to_string()
+        exp: (chrono::Utc::now().timestamp() + duration)  as usize,
+        role: "user".to_string(),
+        name,
+        picture
     };
 
     let token = jsonwebtoken::encode(&jsonwebtoken::Header::default(), &claims,
 &jsonwebtoken::EncodingKey::from_secret(secret_key.as_ref()))
     .map_err(|_|AppError::Internal)?;
 
-    Ok(JWT{token})
+    Ok(token)
 }
 
 pub fn verify_and_decode_google_jwt(state: &AppState, jwk_keys: Vec<Jwk>, id_token: &str) -> Result<TokenData<GoogleClaims>, AppError> {
@@ -90,19 +92,32 @@ pub fn verify_and_decode_google_jwt(state: &AppState, jwk_keys: Vec<Jwk>, id_tok
     Ok(token_data)
 }
 
-pub async fn get_or_create_user(state: &AppState, google_id: &str, email: &str) -> Result<i32, SqlErrors> {
-    let result = sqlx::query!(
+pub async fn get_or_create_user(state: &AppState, google_id: &str, email: &str, name: &str, picture: &str) -> Result<User, SqlErrors> {
+    let user = sqlx::query_as!(User,
         r#"
-        INSERT INTO users (google_id, email, role, is_active)
-        VALUES ($1, $2, 'user', true)
+        INSERT INTO users (google_id, email, full_name, avatar_url, role, is_active)
+        VALUES ($1, $2, $3, $4, 'user', true)
         ON CONFLICT (email)
-        DO UPDATE SET google_id = EXCLUDED.google_id
-        RETURNING ID
-        "#,
+        DO UPDATE SET 
+            google_id = COALESCE(users.google_id, EXCLUDED.google_id),
+            full_name = EXCLUDED.full_name,
+            avatar_url = EXCLUDED.avatar_url
+        RETURNING 
+            id, 
+            google_id as "google_id?", 
+            email, 
+            full_name, 
+            avatar_url as "avatar_url?", 
+            role, 
+            is_active, 
+            created_at
+        "#, 
         google_id,
-        email
+        email,
+        name,
+        picture
     ).fetch_one(&state.pool)
     .await?;
 
-    Ok(result.id)
+    Ok(user)
 }

@@ -1,24 +1,43 @@
-use rocket::{State, serde::json::Json};
-use crate::{AppState, dto::auth::{JWT, OAuthCode}, errors::{AppError}, utils::{exchange_code_to_token, fetch_jwks, generate_jwt, get_or_create_user, verify_and_decode_google_jwt}};
-
+use rocket::{State, http::SameSite, serde::json::Json};
+use crate::{AppState, dto::auth::{OAuthCode, UserDto}, errors::{AppError, AuthErrors}, models::user::User, utils::{exchange_code_to_token, fetch_jwks, generate_jwt, get_or_create_user, verify_and_decode_google_jwt}};
+use rocket::http::{Cookie, CookieJar};
 
 pub fn routes() -> Vec<rocket::Route> {
     routes![oauth]
 }
 
 #[post("/oauth", data="<code>")]
-async fn oauth(code: Json<OAuthCode>, state: &State<AppState>) -> Result<Json<JWT>, AppError> {
+async fn oauth(cookies: &CookieJar<'_>, code: Json<OAuthCode>, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
     // into_inner just looks at the AuthCode from the Json<AuthCode>
     let oauth = code.into_inner().code;
     let id_token = exchange_code_to_token(oauth, &state).await?;
     let jwk_keys = fetch_jwks(&state).await?.keys;
     let token_data = verify_and_decode_google_jwt(&state, jwk_keys, &id_token)?;
-    
+
+    if !token_data.claims.email_verified{ return Err(AuthErrors::UnverifiedEmail.into());}
+
     let google_sub = &token_data.claims.sub;
     let email = token_data.claims.email;
+    let name = token_data.claims.name.unwrap_or_else(|| "User".to_string());
+    let picture = token_data.claims.picture.unwrap_or_else(|| "".to_string());
 
-    let user_id = get_or_create_user(&state, google_sub, &email).await?;
-    let jwt_token = generate_jwt(user_id, &state, email)?;
-    // println!("{:?}", jwt_token);
-    Ok(Json(jwt_token))
+    let user = get_or_create_user(&state, google_sub, &email, &name, &picture).await?;
+    let jwt_token = generate_jwt(user.id, &state, email, name, picture)?;
+
+    let cookie = Cookie::build(("auth_token", jwt_token))
+        .path("/")
+        .http_only(true)
+        .secure(true)
+        .same_site(SameSite::Lax)
+        .max_age(rocket::time::Duration::seconds(state.config.session_duration))
+        .build();
+
+    cookies.add_private(cookie);
+
+    Ok(Json(UserDto { 
+        email: user.email, 
+        name: user.full_name ,
+        picture: user.avatar_url.unwrap_or_else(|| "https://api.dicebear.com/7.x/bottts/svg".into()),
+        role: user.role, 
+        is_active: user.is_active }))
 }

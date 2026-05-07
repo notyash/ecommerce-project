@@ -9,6 +9,7 @@ const navItems = [
   { label: "Support", path: "/support" },
   { label: "Contact", path: "/contact" },
   { label: "Sign In", path: "/login", type: "auth", first_render: false },
+//   { label: "Test", path: "/test"},
 ]
 
 export function NavItem({ children, styles = "", path}: TNavItem) {

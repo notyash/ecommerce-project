@@ -6,7 +6,7 @@ const categories = [
     {label: "home-decoration", display_name: "Home Decoration"},
     {label: "kitchen-accessories", display_name: "Kitchen Accessories"},
     {label: "laptops", display_name: "Laptops"},
-    {label: "mens-shirt", display_name: "Mens Shirt"},
+    {label: "mens-shirts", display_name: "Mens Shirts"},
     {label: "mens-shoes", display_name: "Mens Shoes"},
     {label: "mens-watches", display_name: "Mens watches"},
     {label: "mobile-accessories", display_name: "Mobile Accessories"},

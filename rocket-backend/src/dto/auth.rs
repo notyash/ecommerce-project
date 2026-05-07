@@ -7,11 +7,6 @@ pub struct OAuthCode {
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-pub struct JWT {
-    pub token: String, 
-}
-
-#[derive(Deserialize, Serialize, Debug)]
 pub struct GoogleResponse {
     pub access_token: String,
     pub expires_in: i64,
@@ -25,8 +20,12 @@ pub struct GoogleResponse {
 pub struct GoogleClaims { // of googles jwt token
     pub sub: String,
     pub email: String,
-    pub exp: usize,
+    pub email_verified: bool, // Recommended security check
+    pub name: Option<String>,
+    pub picture: Option<String>,
+    pub exp: i64,
     pub aud: String,
+    pub iss: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -35,6 +34,17 @@ pub struct AppClaims { // of our own jwt token
     pub email: String,
     pub exp: usize,     
     pub role: String,
+    pub name: String,
+    pub picture: String
+}
+
+#[derive(Serialize)]
+pub struct UserDto {
+    pub email: String,
+    pub name: String,
+    pub picture: String,
+    pub role: String,
+    pub is_active: bool,
 }
 
 #[derive(Debug, Deserialize)]

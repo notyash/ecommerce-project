@@ -1,6 +1,5 @@
 import { useGoogleOAuthLogin } from "../utils/hooks";
 
-
 export default function LoginPage() {
   const googleLogin = useGoogleOAuthLogin();
   return (

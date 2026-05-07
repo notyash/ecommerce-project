@@ -13,7 +13,7 @@ mod utils;
 
 use config::Config;
 use reqwest::Client;
-use crate::{db::DbPool, fairings::CorsFairing};
+use crate::{db::DbPool, errors::default_catcher, fairings::CorsFairing};
 
 #[get("/")]
 fn index() -> &'static str {
@@ -37,13 +37,14 @@ async fn main() {
             config,
             client,
         })
-        .mount("/auth", routes::auth::routes())
+        .mount("/api/auth", routes::auth::routes())
         // .mount("/users", routes::users::routes())
         .mount("/", routes![index])
-        .mount("/products", routes::products::routes())
+        .mount("/api/products", routes::products::routes())
         .attach(CorsFairing::new(&[
             "http://127.0.0.1:5173", "http://localhost:5173", "http://frontend:5173"
         ]))
+        .register("/", catchers![default_catcher])
         .launch()
         .await
         .unwrap();

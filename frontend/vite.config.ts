@@ -14,11 +14,12 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 5173,
     proxy: {
-          '^/(auth|products|users)': { // regex to match all rotues provided in the brackets
+          '/api': {
             target: 'http://backend:8000',
             changeOrigin: true,
+          },
         },
     }
   },
-});
+);
 

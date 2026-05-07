@@ -7,20 +7,20 @@ import { useGoogleLogin } from "@react-oauth/google";
 export function useGoogleOAuthLogin(){
     const googleLogin = useGoogleLogin({
         flow: 'auth-code',
+        scope: 'openid email profile',
         onSuccess: async (codeResponse) => {
-            console.log(codeResponse);
-            const tokens = await fetch(
-                '/auth/oauth', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+            try {
+                const token = await fetch('/api/auth/oauth', {
+                    headers: {'Content-Type': 'application/json',},
                     method: 'POST',
                     body: JSON.stringify({code: codeResponse.code}),
                 });
-            if (tokens.ok) {
-                console.log("JWT token:" + await tokens.text());
-            } else {
-                console.log("Could not retrieve the JWT token")
+                if (!token.ok) {
+                    const errorData = await token.json();
+                    throw new Error(errorData.message || 'Backend authentication failed');
+                }
+            } catch (err) {
+                console.error("Server-side login error:", err);
             }
         },
         onError: errorResponse => console.log(errorResponse),
@@ -32,7 +32,7 @@ export function useGetData() {
         const { data: productsData, isLoading, isError} = useQuery<Products[]>({
         queryKey: ['products'], 
         queryFn: async ({ signal }) => {
-                                        const res = await fetch('/products', { signal })
+                                        const res = await fetch('/api/products', { signal })
                                         if (!res.ok) throw new Error('Failed to fetch products')
                                         return await res.json()
                                         },
@@ -45,7 +45,7 @@ export function useGetDataById(productID: number) {
         const { data: productData, isLoading, isError} = useQuery<Products>({
         queryKey: ['products', productID], 
         queryFn: async ({ signal }) => {
-                                        const res = await fetch(`/products/${productID}`, { signal })
+                                        const res = await fetch(`/api/products/${productID}`, { signal })
                                         if (!res.ok) throw new Error('Failed to fetch products')
                                         return await res.json()
                                         },
