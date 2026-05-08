@@ -1,9 +1,9 @@
-use rocket::{State, http::SameSite, serde::json::Json};
+use rocket::{State, http::{SameSite, Status}, serde::json::Json};
 use crate::{AppState, dto::auth::{AuthenticatedUser, OAuthCode, UserDto}, errors::{AppError, AuthErrors}, models::user::User, utils::{exchange_code_to_token, fetch_jwks, generate_jwt, get_or_create_user, verify_and_decode_google_jwt}};
 use rocket::http::{Cookie, CookieJar};
 
 pub fn routes() -> Vec<rocket::Route> {
-    routes![oauth, me]
+    routes![oauth, me, logout]
 }
 
 #[post("/oauth", data="<code>")]
@@ -48,4 +48,10 @@ async fn me(user: AuthenticatedUser, state: &State<AppState>) -> Result<Json<Use
     
     let backup_image = &state.config.backup_avatar;
     Ok(Json(user_record.to_dto(backup_image)))
+}
+
+#[post("/logout")]
+async fn logout(cookies: &CookieJar<'_>) -> Result<Status, AppError> {
+    cookies.remove_private(Cookie::from("auth_token"));
+    Ok(Status::NoContent)
 }
