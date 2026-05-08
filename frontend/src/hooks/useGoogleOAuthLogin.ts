@@ -7,7 +7,7 @@ export function useGoogleOAuthLogin(){
         flow: 'auth-code',
         scope: 'openid email profile',
         onSuccess: async (codeResponse) => {
-                const response = await api.post('/api/auth/oauth',
+                const response = await api.post('/auth/oauth',
                     { code: codeResponse.code}, 
                     { headers: {'Content-Type': 'application/json'}});
                 const userDto: User = response.data;

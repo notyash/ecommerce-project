@@ -24,7 +24,6 @@ export function NavItem({ children, styles = "", path}: TNavItem) {
 
 export default function NavBar() {
     const {pathname} = useLocation();
-    console.log(pathname)
     return (
         <nav className="fixed top-0 left-0 w-full z-10 bg-black">
             <Link to={"/"}><img src="/xre_logo.png" className="mt-1 absolute left-6 h-20 w-auto" /></Link>

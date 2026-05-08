@@ -8,13 +8,12 @@ export function useGetData() {
         queryKey: ['products'], 
         queryFn: async () => {
             try {
-                const res = await api.get('api/products')
+                const res = await api.get('/products')
                 return res.data
             } catch (e) {
                 if (e instanceof AxiosError) { console.error('Unexpected error:', e) }
                 else { console.error('Unexpected error:', e) }
                 throw new Error('Login failed');
-
             }
         },
         staleTime: Infinity
@@ -27,7 +26,7 @@ export function useGetDataById(productID: number) {
         queryKey: ['products', productID], 
         queryFn: async () => {
             try {
-                const res = await api.get(`/api/products/${productID}`)
+                const res = await api.get(`/products/${productID}`)
                 return res.data
             } catch (e) {
                 if (e instanceof AxiosError) { console.error('Unexpected error:', e) }

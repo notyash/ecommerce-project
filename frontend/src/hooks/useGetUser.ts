@@ -5,7 +5,7 @@ import { AxiosError } from "axios"
 
 async function fetchMe() {
     try {
-        const response = await api.get('api/auth/me')
+        const response = await api.get('/auth/me')
         return response.data
     } catch (e) {
         if (e instanceof AxiosError) {
