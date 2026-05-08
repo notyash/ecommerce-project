@@ -1,6 +1,6 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClient } from '../main'
+import { queryClient } from '../utils/queryClient'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 
 export const Route = createRootRoute({

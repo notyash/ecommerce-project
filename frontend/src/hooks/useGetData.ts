@@ -1,14 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
 import { Products } from "../types"
+import { api } from "../utils/axios"
+import { AxiosError } from "axios"
 
 export function useGetData() {
         const { data: productsData, isLoading, isError} = useQuery<Products[]>({
         queryKey: ['products'], 
-        queryFn: async ({ signal }) => {
-                                        const res = await fetch('/api/products', { signal })
-                                        if (!res.ok) throw new Error('Failed to fetch products')
-                                        return await res.json()
-                                        },
+        queryFn: async () => {
+            try {
+                const res = await api.get('api/products')
+                return res.data
+            } catch (e) {
+                if (e instanceof AxiosError) { console.error('Unexpected error:', e) }
+                else { console.error('Unexpected error:', e) }
+                throw new Error('Login failed');
+
+            }
+        },
         staleTime: Infinity
         })
         return {productsData, isLoading, isError}
@@ -17,11 +25,16 @@ export function useGetData() {
 export function useGetDataById(productID: number) {
         const { data: productData, isLoading, isError} = useQuery<Products>({
         queryKey: ['products', productID], 
-        queryFn: async ({ signal }) => {
-                                        const res = await fetch(`/api/products/${productID}`, { signal })
-                                        if (!res.ok) throw new Error('Failed to fetch products')
-                                        return await res.json()
-                                        },
+        queryFn: async () => {
+            try {
+                const res = await api.get(`/api/products/${productID}`)
+                return res.data
+            } catch (e) {
+                if (e instanceof AxiosError) { console.error('Unexpected error:', e) }
+                else { console.error('Unexpected error:', e) }
+                throw new Error('Login failed');
+            }
+        },
         staleTime: Infinity,    
         enabled: !!productID
         })

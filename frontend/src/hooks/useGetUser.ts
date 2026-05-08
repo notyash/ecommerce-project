@@ -1,16 +1,26 @@
 import { useQuery } from "@tanstack/react-query"
 import { User } from "../types"
+import { api } from "../utils/axios"
+import { AxiosError } from "axios"
 
 async function fetchMe() {
-    const res = await fetch('/api/auth/me', { credentials: 'include' })
-    if (!res.ok) throw new Error('Not authenticated')
-    return res.json()
+    try {
+        const response = await api.get('api/auth/me')
+        return response.data
+    } catch (e) {
+        if (e instanceof AxiosError) {
+            console.error('Error response:', e.response?.data);
+        } else {
+            console.error('Unexpected error:', e);
+        }
+        throw new Error('Login failed');
+    }
 }
 
 export function useGetUser() {
-    return useQuery<User>({
+    return useQuery<User, Error>({
         queryKey: ['me'],
         queryFn: fetchMe,
-        retry: false
+        retry: false,
     })
 }

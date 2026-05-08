@@ -10,9 +10,10 @@ export default function ProductsPage() {
     const {productsData, isError} = useGetData();
     const [filter, setFilter] = useState<string[]>([])
     const {data} = useGetUser();
+    console.log(data);
     if (isError) return <div>Unable to retrieve products!</div>
     if (!productsData) return null
-
+    console.log('ProductsPage rendered')
     return (
         <>
         <NavBar />
