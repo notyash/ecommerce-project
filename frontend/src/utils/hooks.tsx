@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Products, AddToCart as TAddToCart } from "../types";
+import { User, Products, AddToCart as TAddToCart } from "../types";
 import { useContext } from "react";
 import { CartDispatchContext } from "../context/CartContext";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -10,15 +10,17 @@ export function useGoogleOAuthLogin(){
         scope: 'openid email profile',
         onSuccess: async (codeResponse) => {
             try {
-                const token = await fetch('/api/auth/oauth', {
+                const response = await fetch('/api/auth/oauth', {
                     headers: {'Content-Type': 'application/json',},
                     method: 'POST',
                     body: JSON.stringify({code: codeResponse.code}),
                 });
-                if (!token.ok) {
-                    const errorData = await token.json();
+                if (!response.ok) {
+                    const errorData = await response.json();
                     throw new Error(errorData.message || 'Backend authentication failed');
                 }
+                const userDto: User = await response.json();
+                console.log(`Logged in as: ${userDto.name} ${userDto}`)
             } catch (err) {
                 console.error("Server-side login error:", err);
             }

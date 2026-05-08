@@ -1,9 +1,9 @@
 use rocket::{State, http::SameSite, serde::json::Json};
-use crate::{AppState, dto::auth::{OAuthCode, UserDto}, errors::{AppError, AuthErrors}, models::user::User, utils::{exchange_code_to_token, fetch_jwks, generate_jwt, get_or_create_user, verify_and_decode_google_jwt}};
+use crate::{AppState, dto::auth::{AuthenticatedUser, OAuthCode, UserDto}, errors::{AppError, AuthErrors}, models::user::User, utils::{exchange_code_to_token, fetch_jwks, generate_jwt, get_or_create_user, verify_and_decode_google_jwt}};
 use rocket::http::{Cookie, CookieJar};
 
 pub fn routes() -> Vec<rocket::Route> {
-    routes![oauth]
+    routes![oauth, me]
 }
 
 #[post("/oauth", data="<code>")]
@@ -22,7 +22,7 @@ async fn oauth(cookies: &CookieJar<'_>, code: Json<OAuthCode>, state: &State<App
     let picture = token_data.claims.picture.unwrap_or_else(|| "".to_string());
 
     let user = get_or_create_user(&state, google_sub, &email, &name, &picture).await?;
-    let jwt_token = generate_jwt(user.id, &state, email, name, picture)?;
+    let jwt_token = generate_jwt(user.id, &state)?;
 
     let cookie = Cookie::build(("auth_token", jwt_token))
         .path("/")
@@ -33,11 +33,19 @@ async fn oauth(cookies: &CookieJar<'_>, code: Json<OAuthCode>, state: &State<App
         .build();
 
     cookies.add_private(cookie);
+    let backup_image = &state.config.backup_avatar.clone();
 
-    Ok(Json(UserDto { 
-        email: user.email, 
-        name: user.full_name ,
-        picture: user.avatar_url.unwrap_or_else(|| "https://api.dicebear.com/7.x/bottts/svg".into()),
-        role: user.role, 
-        is_active: user.is_active }))
+    Ok(Json(user.to_dto(backup_image)))
+
+}
+
+#[get("/me")]
+async fn me(user: AuthenticatedUser, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
+    let user_record = sqlx::query_as!(User,
+        "SELECT id, google_id, email, full_name, avatar_url, role, is_active, created_at FROM users WHERE id = $1", user.id)
+        .fetch_one(&state.pool)
+        .await?;
+    
+    let backup_image = &state.config.backup_avatar;
+    Ok(Json(user_record.to_dto(backup_image)))
 }

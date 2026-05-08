@@ -1,8 +1,5 @@
-use core::error;
-
 use rocket::Request;
 use rocket::http::Status;   
-use serde_json::Value;
 use thiserror::Error;
 use rocket::response::{self, Responder, Response};
 use rocket::serde::json::{Json, json};
@@ -50,8 +47,12 @@ pub enum AppError {
     Authorization(#[from] AuthErrors),
     #[error(transparent)]
     Jwk(#[from] JwksError),
-    #[error(transparent)]
-    Database(#[from] SqlErrors),
+    #[error("Database error: {0}")]
+    Database(#[from] sqlx::Error),
+    #[error("JWT error: {0}")]
+    Jwt(#[from] jsonwebtoken::errors::Error),
+    #[error("Missing token error")]
+    MissingToken,
     #[error("Internal Server Error")]
     Internal, // Catches All Errors
 }
@@ -62,13 +63,6 @@ pub enum AuthErrors {
     UnverifiedEmail,
 }
 
-#[derive(Error, Debug)]
-pub enum SqlErrors {
-    #[error("Database error: {0}")]
-    Sqlx(#[from] sqlx::Error),
-    #[error("Database constraint violated (e.g. duplicate email): {0}")]
-    ConstraintViolation(String)
-}
 
 // Used to convert OAuthExchangeError into the general AppError. #[from] macro does this for you
 // impl From<OAuthExchangeError> for AppError {
@@ -76,7 +70,6 @@ pub enum SqlErrors {
 //         AppError::OAuth(err)
 //     }
 // }
-
 // Used to return status code and the JSON body to the frontend when AppError occurs
 impl <'r> Responder<'r, 'static> for AppError {
     fn respond_to(self, _: &'r Request<'_>) -> response::Result<'static> {
@@ -101,17 +94,20 @@ impl <'r> Responder<'r, 'static> for AppError {
                     JwksError::ParseError(_) => (Status::InternalServerError, jwk_err.to_string())
                 }
             }
-            AppError::Database(db_err) => {
-                match db_err {
-                    SqlErrors::ConstraintViolation(_) => (Status::Conflict, db_err.to_string()),
-                    SqlErrors::Sqlx(_) => (Status::InternalServerError, db_err.to_string()),
-                }
+            AppError::Database(sqlx::Error::RowNotFound) => {
+                (Status::NotFound, "Resource not found".to_string())
+            },
+            // Catch-all for other DB errors (500)
+            AppError::Database(_) => {
+                (Status::InternalServerError, "A database error occurred".to_string())
             }
             AppError::Authorization(err) => {
                 match err {
                     AuthErrors::UnverifiedEmail => (Status::Unauthorized, err.to_string()),
                 }
             }
+            AppError::MissingToken  => (Status::Unauthorized, "Token not found.".to_string()),
+            AppError::Jwt(err) => (Status::Unauthorized, err.to_string()),
             AppError::Internal => (Status::InternalServerError, "An unexpected error occurred".to_string()),
         };
 

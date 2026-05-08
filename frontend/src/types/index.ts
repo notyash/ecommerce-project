@@ -16,6 +16,16 @@ export type SavedCarts = {
   id: number
 }
 
+export type User = {
+  id: number,
+  email: string, 
+  name: string,
+  picture: string,
+  role: string, 
+  is_active: boolean,
+  created_at: string,
+}
+
 export type Products = {
   id: number;
   availabilityStatus?: string;
@@ -51,3 +61,4 @@ export type FilteredData = {
 export type CartAction =  { type: 'ADD_ID'; payload: SavedCarts } | 
                           { type: 'REMOVE_ID'; payload: { id: number } } |
                           { type: 'CLEAR_CART' }
+

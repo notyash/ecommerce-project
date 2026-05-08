@@ -5,6 +5,7 @@ pub struct Config {
     pub oauth_client: String,
     pub oauth_redirect_uri: String,
     pub jwks_uri: String,
+    pub backup_avatar: String,
     pub session_duration: i64
 }
 
@@ -22,6 +23,7 @@ impl Config {
                  oauth_redirect_uri: std::env::var("OAUTH_REDIRECT_URI").expect("OAUTH_REDIRECT_URI must be set"),
                  jwks_uri: std::env::var("JWKS_URI").expect("JWKS_URI must be set"),
                  session_duration,
+                 backup_avatar: std::env::var("BACKUP_AVATAR").expect("BACKUP_AVATAR must be set")
         }
     }
 }

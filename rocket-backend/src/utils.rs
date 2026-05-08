@@ -1,5 +1,5 @@
-use jsonwebtoken::{TokenData};
-use crate::{AppState, dto::auth::{AppClaims, GoogleClaims, GoogleResponse, Jwk, JwksResponse}, errors::{AppError, JwksError, OAuthExchangeError, SqlErrors}, models::user::User};
+use jsonwebtoken::{DecodingKey, TokenData, Validation, decode};
+use crate::{AppState, dto::auth::{AppClaims, GoogleClaims, GoogleResponse, Jwk, JwksResponse}, errors::{AppError, JwksError, OAuthExchangeError}, models::user::User};
 use serde::de::Error;
 
 
@@ -50,17 +50,14 @@ pub async fn fetch_jwks(state: &AppState) -> Result<JwksResponse, JwksError> {
     Ok(jwks)
 }
 
-pub fn generate_jwt(sub: i32, state: &AppState, email: String, name: String, picture: String) -> Result<String, AppError> {
+pub fn generate_jwt(sub: i32, state: &AppState) -> Result<String, AppError> {
     let secret_key = &state.config.jwt_secret;
     let duration = state.config.session_duration;
 
     let claims = AppClaims {
         sub,
-        email,
         exp: (chrono::Utc::now().timestamp() + duration)  as usize,
-        role: "user".to_string(),
-        name,
-        picture
+        role: "User".to_string(),
     };
 
     let token = jsonwebtoken::encode(&jsonwebtoken::Header::default(), &claims,
@@ -92,7 +89,7 @@ pub fn verify_and_decode_google_jwt(state: &AppState, jwk_keys: Vec<Jwk>, id_tok
     Ok(token_data)
 }
 
-pub async fn get_or_create_user(state: &AppState, google_id: &str, email: &str, name: &str, picture: &str) -> Result<User, SqlErrors> {
+pub async fn get_or_create_user(state: &AppState, google_id: &str, email: &str, name: &str, picture: &str) -> Result<User, AppError> {
     let user = sqlx::query_as!(User,
         r#"
         INSERT INTO users (google_id, email, full_name, avatar_url, role, is_active)
@@ -120,4 +117,12 @@ pub async fn get_or_create_user(state: &AppState, google_id: &str, email: &str, 
     .await?;
 
     Ok(user)
+}
+
+pub fn decode_jwt(token: &str, secret: &str) -> Result<AppClaims, AppError> {
+    let decoding_key = DecodingKey::from_secret(secret.as_ref());
+    let validation = Validation::default();
+
+    let token_data = decode::<AppClaims>(token, &decoding_key, &validation)?;
+    Ok(token_data.claims)
 }

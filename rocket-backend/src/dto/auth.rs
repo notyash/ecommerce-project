@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 
@@ -31,20 +32,25 @@ pub struct GoogleClaims { // of googles jwt token
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AppClaims { // of our own jwt token
     pub sub: i32,    
-    pub email: String,
     pub exp: usize,     
     pub role: String,
-    pub name: String,
-    pub picture: String
+}
+
+#[derive(Deserialize)]
+pub struct AuthenticatedUser {
+    pub id: i32,
+    pub role: String
 }
 
 #[derive(Serialize)]
 pub struct UserDto {
+    pub id: i32,
     pub email: String,
     pub name: String,
     pub picture: String,
     pub role: String,
     pub is_active: bool,
+    pub created_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Deserialize)]
