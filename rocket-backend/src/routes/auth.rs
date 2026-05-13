@@ -1,6 +1,6 @@
 use rocket::{State, http::{Status}, serde::json::Json};
 use crate::{AppState, dto::auth::{AuthenticatedUser, Credentials, OAuthCode, UserDto}, errors::AppError, repos::user::get_public_user_by_id, 
-    services::auth::{login_user, oauth_login_user}, utils::{build_auth_cookie, generate_jwt}};
+    services::auth::{login_user, oauth_login_user}, utils::auth_utils::{build_auth_cookie, generate_jwt}};
 use rocket::http::{Cookie, CookieJar};
 
 pub fn routes() -> Vec<rocket::Route> {
@@ -35,7 +35,7 @@ async fn oauth(cookies: &CookieJar<'_>, code: Json<OAuthCode>, state: &State<App
     // into_inner just looks at the AuthCode from the Json<AuthCode>
     let user = oauth_login_user(code.into_inner().code, &state).await?;
     let jwt_token = generate_jwt(user.id, &state.config.jwt_secret, state.config.session_duration)?;
-    
+
     let cookie = build_auth_cookie(jwt_token, state.config.session_duration);
     cookies.add_private(cookie);
 

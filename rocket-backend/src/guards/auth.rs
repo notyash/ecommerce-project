@@ -1,6 +1,6 @@
 use rocket::{http::Status, request::{FromRequest, Outcome, Request}};
 
-use crate::{AppState, dto::auth::AuthenticatedUser, errors::AppError, utils::decode_jwt};
+use crate::{AppState, dto::auth::AuthenticatedUser, errors::AppError, utils::auth_utils::decode_jwt};
 
 
 #[rocket::async_trait]

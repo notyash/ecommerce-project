@@ -1,6 +1,5 @@
-use jsonwebtoken::{DecodingKey, TokenData, Validation, decode};
-use rocket::http::{Cookie, SameSite};
-use crate::{AppState, dto::auth::{AppClaims, GoogleClaims, GoogleResponse, Jwk, JwksResponse}, errors::{AppError, JwksError, OAuthExchangeError}};
+use jsonwebtoken::TokenData;
+use crate::{AppState, dto::auth::{GoogleClaims, GoogleResponse, Jwk, JwksResponse}, errors::{AppError, JwksError, OAuthExchangeError}};
 use serde::de::Error;
 
 
@@ -51,30 +50,6 @@ pub async fn fetch_jwks(state: &AppState) -> Result<JwksResponse, JwksError> {
     Ok(jwks)
 }
 
-pub fn build_auth_cookie(token: String, session_duration: i64) -> Cookie<'static> {
-    Cookie::build(("auth_token", token))
-        .path("/")
-        .http_only(true)
-        .secure(true)
-        .same_site(SameSite::Lax)
-        .max_age(rocket::time::Duration::seconds(session_duration))
-        .build()
-}
-
-pub fn generate_jwt(sub: i32, secret_key: &str, session_duration: i64) -> Result<String, AppError> {
-    let claims = AppClaims {
-        sub,
-        exp: (chrono::Utc::now().timestamp() + session_duration)  as usize,
-        role: "User".to_string(),
-    };
-
-    let token = jsonwebtoken::encode(&jsonwebtoken::Header::default(), &claims,
-&jsonwebtoken::EncodingKey::from_secret(secret_key.as_ref()))
-    .map_err(|_|AppError::Internal)?;
-
-    Ok(token)
-}
-
 pub fn verify_and_decode_google_jwt(state: &AppState, jwk_keys: Vec<Jwk>, id_token: &str) -> Result<TokenData<GoogleClaims>, AppError> {
     let header = jsonwebtoken::decode_header(id_token).map_err(|_| AppError::Internal)?;
     let kid = header.kid.ok_or_else(|| { // closure only runs when kid is None
@@ -95,13 +70,4 @@ pub fn verify_and_decode_google_jwt(state: &AppState, jwk_keys: Vec<Jwk>, id_tok
     let token_data  = jsonwebtoken::decode::<GoogleClaims>(&id_token, &decoding_key, &validation)
                                                                                     .map_err(|_| AppError::Internal)?;
     Ok(token_data)
-}
-
-
-pub fn decode_jwt(token: &str, secret: &str) -> Result<AppClaims, AppError> {
-    let decoding_key = DecodingKey::from_secret(secret.as_ref());
-    let validation = Validation::default();
-
-    let token_data = decode::<AppClaims>(token, &decoding_key, &validation)?;
-    Ok(token_data.claims)
 }
