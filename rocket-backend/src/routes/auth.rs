@@ -1,6 +1,6 @@
-use rocket::{State, http::{SameSite, Status}, serde::json::Json};
-use crate::{AppState, dto::auth::{AuthenticatedUser, Credentials, OAuthCode, UserDto}, errors::{AppError, AuthErrors}, repos::user::{get_public_user_by_id, upsert_google_user}, 
-    services::auth::login_user, utils::{build_auth_cookie, exchange_code_to_token, fetch_jwks, generate_jwt, verify_and_decode_google_jwt}};
+use rocket::{State, http::{Status}, serde::json::Json};
+use crate::{AppState, dto::auth::{AuthenticatedUser, Credentials, OAuthCode, UserDto}, errors::AppError, repos::user::get_public_user_by_id, 
+    services::auth::{login_user, oauth_login_user}, utils::{build_auth_cookie, generate_jwt}};
 use rocket::http::{Cookie, CookieJar};
 
 pub fn routes() -> Vec<rocket::Route> {
@@ -33,29 +33,10 @@ async fn logout(cookies: &CookieJar<'_>) -> Result<Status, AppError> {
 #[post("/oauth", data="<code>")]
 async fn oauth(cookies: &CookieJar<'_>, code: Json<OAuthCode>, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
     // into_inner just looks at the AuthCode from the Json<AuthCode>
-    let oauth = code.into_inner().code;
-    let id_token = exchange_code_to_token(oauth, &state).await?;
-    let jwk_keys = fetch_jwks(&state).await?.keys;
-    let token_data = verify_and_decode_google_jwt(&state, jwk_keys, &id_token)?;
-
-    if !token_data.claims.email_verified{ return Err(AuthErrors::UnverifiedEmail.into());}
-
-    let google_sub = &token_data.claims.sub;
-    let email = token_data.claims.email;
-    let name = token_data.claims.name.unwrap_or_else(|| "User".to_string());
-    let picture = token_data.claims.picture.unwrap_or_else(|| "".to_string());
-
-    let user = upsert_google_user(&state, google_sub, &email, &name, &picture).await?;
+    let user = oauth_login_user(code.into_inner().code, &state).await?;
     let jwt_token = generate_jwt(user.id, &state.config.jwt_secret, state.config.session_duration)?;
-
-    let cookie = Cookie::build(("auth_token", jwt_token))
-        .path("/")
-        .http_only(true)
-        .secure(true)
-        .same_site(SameSite::Lax)
-        .max_age(rocket::time::Duration::seconds(state.config.session_duration))
-        .build();
-
+    
+    let cookie = build_auth_cookie(jwt_token, state.config.session_duration);
     cookies.add_private(cookie);
 
     Ok(Json(user.to_dto(&state)))

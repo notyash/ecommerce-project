@@ -1,8 +1,8 @@
-use crate::{AppState, errors::{AppError, AuthErrors}, models::user::{PublicUser, User}};
+use crate::{AppState, errors::{AppError, AuthErrors}, models::user::{User, AuthUser}};
 
-pub async fn get_user_by_email_with_password(email: &str, state: &AppState) -> Result<User, AppError> {
-        let user = sqlx::query_as!(User,
-        r#"SELECT id, google_id, password_hash as "password_hash!", email, full_name, avatar_url, role, is_active, created_at 
+pub async fn get_user_by_email_with_password(email: &str, state: &AppState) -> Result<AuthUser, AppError> {
+        let user = sqlx::query_as!(AuthUser,
+        r#"SELECT id, google_id, password_hash, email, full_name, avatar_url, role, is_active, created_at 
             FROM users WHERE
             email = $1 AND password_hash IS NOT NULL"#, 
         email)
@@ -13,16 +13,16 @@ pub async fn get_user_by_email_with_password(email: &str, state: &AppState) -> R
     Ok(user)
 }
 
-pub async fn get_public_user_by_id(user_id: i32, state: &AppState) -> Result<PublicUser, AppError> {
-        let user_record = sqlx::query_as!(PublicUser,
+pub async fn get_public_user_by_id(user_id: i32, state: &AppState) -> Result<User, AppError> {
+        let user_record = sqlx::query_as!(User,
         "SELECT id, google_id, email, full_name, avatar_url, role, is_active, created_at FROM users WHERE id = $1", user_id)
         .fetch_one(&state.pool).await?;
 
     Ok(user_record)
 }
 
-pub async fn upsert_google_user(state: &AppState, google_id: &str, email: &str, name: &str, picture: &str) -> Result<PublicUser, AppError> {
-    let user = sqlx::query_as!(PublicUser,
+pub async fn upsert_google_user(state: &AppState, google_id: &str, email: &str, name: &str, picture: &str) -> Result<User, AppError> {
+    let user = sqlx::query_as!(User,
         r#"
         INSERT INTO users (google_id, email, full_name, avatar_url, role, is_active)
         VALUES ($1, $2, $3, $4, 'user', true)

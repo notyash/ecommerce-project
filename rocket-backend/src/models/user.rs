@@ -1,21 +1,21 @@
 use crate::{AppState, dto::auth::UserDto};
 
+#[derive(Debug, sqlx::FromRow)]
+pub struct AuthUser {
+    pub id: i32,
+    pub password_hash: Option<String>,
+    pub google_id: Option<String>,
+    pub email: String,
+    pub full_name: String,
+    pub avatar_url: Option<String>,
+    pub role: String,
+    pub is_active: bool,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+}
+
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct User {
     pub id: i32,
-    pub password_hash: String,
-    pub google_id: Option<String>,
-    pub email: String,
-    pub full_name: String,
-    pub avatar_url: Option<String>,
-    pub role: String,
-    pub is_active: bool,
-    pub created_at: chrono::DateTime<chrono::Utc>,
-}
-
-#[derive(Debug, serde::Serialize, sqlx::FromRow)]
-pub struct PublicUser {
-    pub id: i32,
     pub google_id: Option<String>,
     pub email: String,
     pub full_name: String,
@@ -26,7 +26,7 @@ pub struct PublicUser {
 }
 
 
-impl User {
+impl AuthUser {
     pub fn to_dto(&self, state: &AppState) -> UserDto {
         let backup_url = &state.config.backup_avatar;
         UserDto {
@@ -41,7 +41,7 @@ impl User {
     }
 }
 
-impl PublicUser {
+impl User {
     pub fn to_dto(&self, state: &AppState) -> UserDto {
         let backup_url = &state.config.backup_avatar;
         UserDto {
