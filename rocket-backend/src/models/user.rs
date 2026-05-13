@@ -3,6 +3,7 @@ use crate::dto::auth::UserDto;
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct User {
     pub id: i32,
+    pub password_hash: String,
     pub google_id: Option<String>,
     pub email: String,
     pub full_name: String,

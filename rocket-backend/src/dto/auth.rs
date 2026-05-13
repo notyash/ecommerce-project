@@ -42,6 +42,12 @@ pub struct AuthenticatedUser {
     pub role: String
 }
 
+#[derive(Deserialize)]
+pub struct Credentials {
+    pub email: String,
+    pub password: String,
+}
+
 #[derive(Serialize)]
 pub struct UserDto {
     pub id: i32,

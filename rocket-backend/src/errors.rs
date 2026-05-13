@@ -1,3 +1,5 @@
+use core::error;
+
 use rocket::Request;
 use rocket::http::Status;   
 use thiserror::Error;
@@ -59,8 +61,10 @@ pub enum AppError {
 
 #[derive(Error, Debug)]
 pub enum AuthErrors {
-    #[error("Email not verified")]
+    #[error("Unverified email provided.")]
     UnverifiedEmail,
+    #[error("Invalid email or password.")]
+    InvalidCredentials
 }
 
 
@@ -104,6 +108,7 @@ impl <'r> Responder<'r, 'static> for AppError {
             AppError::Authorization(err) => {
                 match err {
                     AuthErrors::UnverifiedEmail => (Status::Unauthorized, err.to_string()),
+                    AuthErrors::InvalidCredentials => (Status::Unauthorized, err.to_string())
                 }
             }
             AppError::MissingToken  => (Status::Unauthorized, "Token not found.".to_string()),

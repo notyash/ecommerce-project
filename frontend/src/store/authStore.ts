@@ -1,13 +1,17 @@
-// import { create } from 'zustand'
+import { create } from 'zustand'
+import { api } from '../utils/axios'
+import { User } from '../types'
 
-// const useAuthStore = create((set) => ({
-//     user: null,
-//     fetchUser: async () => {
-//         try {
-//             const response = await fetch("/api/auth/me")
-//         }
-//     },
-//     logout: () => set({user: null})
-// }))
+interface AuthStore {
+    user: User | null;
+    setUser: (user: User | null) => void
+    logout: () => void;
+}
 
-// export default useAuthStore
+const useAuthStore = create<AuthStore>((set) => ({
+    user: null, // this is the state
+    setUser: (user) => set({user}),
+    logout: () => set({user: null})
+}))
+
+export default useAuthStore

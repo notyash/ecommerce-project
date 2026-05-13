@@ -1,11 +1,65 @@
 use rocket::{State, http::{SameSite, Status}, serde::json::Json};
-use crate::{AppState, dto::auth::{AuthenticatedUser, OAuthCode, UserDto}, errors::{AppError, AuthErrors}, models::user::User, utils::{exchange_code_to_token, fetch_jwks, generate_jwt, get_or_create_user, verify_and_decode_google_jwt}};
+use crate::{AppState, dto::auth::{AuthenticatedUser, Credentials, OAuthCode, UserDto}, errors::{AppError, AuthErrors}, models::user::User, utils::{exchange_code_to_token, fetch_jwks, generate_jwt, get_or_create_user, verify_and_decode_google_jwt}};
 use rocket::http::{Cookie, CookieJar};
+use argon2::{Argon2, PasswordHash, PasswordVerifier};
 
 pub fn routes() -> Vec<rocket::Route> {
-    routes![oauth, me, logout]
+    routes![oauth, me, logout, login]
 }
 
+#[get("/me")]
+async fn me(user: AuthenticatedUser, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
+    let user_record = sqlx::query_as!(User,
+        "SELECT id, google_id, email, full_name, avatar_url, role, is_active, created_at FROM users WHERE id = $1", user.id)
+        .fetch_one(&state.pool)
+        .await?;
+    
+    let backup_image = &state.config.backup_avatar;
+    Ok(Json(user_record.to_dto(backup_image)))
+}
+
+#[post("/login", data="<credentials>")]
+async fn login(cookies: &CookieJar<'_>, credentials: Json<Credentials>, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
+    let email = &credentials.email;
+    let password = &credentials.password;
+    let user = sqlx::query_as!(User,
+        r#"SELECT id, google_id, password_hash as "password_hash!", email, full_name, avatar_url, role, is_active, created_at 
+            FROM users WHERE
+            email = $1 AND password_hash IS NOT NULL"#, 
+        email)
+        .fetch_one(&state.pool)
+        .await
+        .map_err(|_| AppError::Authorization(AuthErrors::InvalidCredentials))?;
+
+    let parsed_hash = PasswordHash::new(&user.password_hash)
+        .map_err(|_| AppError::Authorization(AuthErrors::InvalidCredentials))?; // if db has bad hashed password stored inside
+    let is_valid = Argon2::default()
+        .verify_password(password.as_bytes(), &parsed_hash)
+        .is_ok();
+
+    if !is_valid {
+        return Err(AuthErrors::InvalidCredentials.into());
+    }
+
+    let jwt_token = generate_jwt(user.id, &state)?;
+    let cookie = Cookie::build(("auth_token", jwt_token))
+        .path("/")
+        .http_only(true)
+        .secure(true)
+        .same_site(SameSite::Lax)
+        .max_age(rocket::time::Duration::seconds(state.config.session_duration))
+        .build();
+    cookies.add_private(cookie);
+
+    Ok(Json(user.to_dto(&state.config.backup_avatar.clone())))
+}
+
+
+#[post("/logout")]
+async fn logout(cookies: &CookieJar<'_>) -> Result<Status, AppError> {
+    cookies.remove_private(Cookie::from("auth_token"));
+    Ok(Status::NoContent)
+}
 #[post("/oauth", data="<code>")]
 async fn oauth(cookies: &CookieJar<'_>, code: Json<OAuthCode>, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
     // into_inner just looks at the AuthCode from the Json<AuthCode>
@@ -39,19 +93,3 @@ async fn oauth(cookies: &CookieJar<'_>, code: Json<OAuthCode>, state: &State<App
 
 }
 
-#[get("/me")]
-async fn me(user: AuthenticatedUser, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
-    let user_record = sqlx::query_as!(User,
-        "SELECT id, google_id, email, full_name, avatar_url, role, is_active, created_at FROM users WHERE id = $1", user.id)
-        .fetch_one(&state.pool)
-        .await?;
-    
-    let backup_image = &state.config.backup_avatar;
-    Ok(Json(user_record.to_dto(backup_image)))
-}
-
-#[post("/logout")]
-async fn logout(cookies: &CookieJar<'_>) -> Result<Status, AppError> {
-    cookies.remove_private(Cookie::from("auth_token"));
-    Ok(Status::NoContent)
-}

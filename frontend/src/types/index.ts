@@ -24,7 +24,7 @@ export type User = {
   role: string, 
   is_active: boolean,
   created_at: string,
-}
+} 
 
 export type Products = {
   id: number;

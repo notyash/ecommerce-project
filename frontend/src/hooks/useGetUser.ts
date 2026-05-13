@@ -14,7 +14,7 @@ async function fetchMe() {
             console.error('Unexpected error:', e);
         }
         throw new Error('Login failed');
-    }
+    }   
 }
 
 export function useGetUser() {

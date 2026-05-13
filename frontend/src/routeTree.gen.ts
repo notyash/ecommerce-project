@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotpasswordRouteImport } from './routes/forgotpassword'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as IndexRouteImport } from './routes/index'
@@ -27,6 +29,11 @@ const SupportRoute = SupportRouteImport.update({
   path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductsRoute = ProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -35,6 +42,11 @@ const ProductsRoute = ProductsRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotpasswordRoute = ForgotpasswordRouteImport.update({
+  id: '/forgotpassword',
+  path: '/forgotpassword',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -57,8 +69,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
+  '/forgotpassword': typeof ForgotpasswordRoute
   '/login': typeof LoginRoute
   '/products': typeof ProductsRoute
+  '/signup': typeof SignupRoute
   '/support': typeof SupportRoute
   '/test': typeof TestRoute
 }
@@ -66,8 +80,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
+  '/forgotpassword': typeof ForgotpasswordRoute
   '/login': typeof LoginRoute
   '/products': typeof ProductsRoute
+  '/signup': typeof SignupRoute
   '/support': typeof SupportRoute
   '/test': typeof TestRoute
 }
@@ -76,8 +92,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/contact': typeof ContactRoute
+  '/forgotpassword': typeof ForgotpasswordRoute
   '/login': typeof LoginRoute
   '/products': typeof ProductsRoute
+  '/signup': typeof SignupRoute
   '/support': typeof SupportRoute
   '/test': typeof TestRoute
 }
@@ -87,19 +105,32 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/contact'
+    | '/forgotpassword'
     | '/login'
     | '/products'
+    | '/signup'
     | '/support'
     | '/test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cart' | '/contact' | '/login' | '/products' | '/support' | '/test'
+  to:
+    | '/'
+    | '/cart'
+    | '/contact'
+    | '/forgotpassword'
+    | '/login'
+    | '/products'
+    | '/signup'
+    | '/support'
+    | '/test'
   id:
     | '__root__'
     | '/'
     | '/cart'
     | '/contact'
+    | '/forgotpassword'
     | '/login'
     | '/products'
+    | '/signup'
     | '/support'
     | '/test'
   fileRoutesById: FileRoutesById
@@ -108,8 +139,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CartRoute: typeof CartRoute
   ContactRoute: typeof ContactRoute
+  ForgotpasswordRoute: typeof ForgotpasswordRoute
   LoginRoute: typeof LoginRoute
   ProductsRoute: typeof ProductsRoute
+  SignupRoute: typeof SignupRoute
   SupportRoute: typeof SupportRoute
   TestRoute: typeof TestRoute
 }
@@ -130,6 +163,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/products': {
       id: '/products'
       path: '/products'
@@ -142,6 +182,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgotpassword': {
+      id: '/forgotpassword'
+      path: '/forgotpassword'
+      fullPath: '/forgotpassword'
+      preLoaderRoute: typeof ForgotpasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -172,8 +219,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CartRoute: CartRoute,
   ContactRoute: ContactRoute,
+  ForgotpasswordRoute: ForgotpasswordRoute,
   LoginRoute: LoginRoute,
   ProductsRoute: ProductsRoute,
+  SignupRoute: SignupRoute,
   SupportRoute: SupportRoute,
   TestRoute: TestRoute,
 }
