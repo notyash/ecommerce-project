@@ -1,5 +1,6 @@
 use jsonwebtoken::{DecodingKey, TokenData, Validation, decode};
-use crate::{AppState, dto::auth::{AppClaims, GoogleClaims, GoogleResponse, Jwk, JwksResponse}, errors::{AppError, JwksError, OAuthExchangeError}, models::user::User};
+use rocket::http::{Cookie, SameSite};
+use crate::{AppState, dto::auth::{AppClaims, GoogleClaims, GoogleResponse, Jwk, JwksResponse}, errors::{AppError, JwksError, OAuthExchangeError}};
 use serde::de::Error;
 
 
@@ -50,13 +51,20 @@ pub async fn fetch_jwks(state: &AppState) -> Result<JwksResponse, JwksError> {
     Ok(jwks)
 }
 
-pub fn generate_jwt(sub: i32, state: &AppState) -> Result<String, AppError> {
-    let secret_key = &state.config.jwt_secret;
-    let duration = state.config.session_duration;
+pub fn build_auth_cookie(token: String, session_duration: i64) -> Cookie<'static> {
+    Cookie::build(("auth_token", token))
+        .path("/")
+        .http_only(true)
+        .secure(true)
+        .same_site(SameSite::Lax)
+        .max_age(rocket::time::Duration::seconds(session_duration))
+        .build()
+}
 
+pub fn generate_jwt(sub: i32, secret_key: &str, session_duration: i64) -> Result<String, AppError> {
     let claims = AppClaims {
         sub,
-        exp: (chrono::Utc::now().timestamp() + duration)  as usize,
+        exp: (chrono::Utc::now().timestamp() + session_duration)  as usize,
         role: "User".to_string(),
     };
 
@@ -89,35 +97,6 @@ pub fn verify_and_decode_google_jwt(state: &AppState, jwk_keys: Vec<Jwk>, id_tok
     Ok(token_data)
 }
 
-pub async fn get_or_create_user(state: &AppState, google_id: &str, email: &str, name: &str, picture: &str) -> Result<User, AppError> {
-    let user = sqlx::query_as!(User,
-        r#"
-        INSERT INTO users (google_id, email, full_name, avatar_url, role, is_active)
-        VALUES ($1, $2, $3, $4, 'user', true)
-        ON CONFLICT (email)
-        DO UPDATE SET 
-            google_id = COALESCE(users.google_id, EXCLUDED.google_id),
-            full_name = EXCLUDED.full_name,
-            avatar_url = EXCLUDED.avatar_url
-        RETURNING 
-            id, 
-            google_id as "google_id?", 
-            email, 
-            full_name, 
-            avatar_url as "avatar_url?", 
-            role, 
-            is_active, 
-            created_at
-        "#, 
-        google_id,
-        email,
-        name,
-        picture
-    ).fetch_one(&state.pool)
-    .await?;
-
-    Ok(user)
-}
 
 pub fn decode_jwt(token: &str, secret: &str) -> Result<AppClaims, AppError> {
     let decoding_key = DecodingKey::from_secret(secret.as_ref());

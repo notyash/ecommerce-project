@@ -10,6 +10,8 @@ mod routes;
 mod guards;
 mod fairings;
 mod utils;
+mod repos;
+mod services;
 
 use config::Config;
 use reqwest::Client;
