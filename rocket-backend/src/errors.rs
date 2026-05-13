@@ -1,5 +1,3 @@
-use core::error;
-
 use rocket::Request;
 use rocket::http::Status;   
 use thiserror::Error;

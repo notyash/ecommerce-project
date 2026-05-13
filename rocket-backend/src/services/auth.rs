@@ -1,9 +1,10 @@
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
+use rocket::{http::CookieJar, serde::json::Json};
 
-use crate::{AppState, dto::auth::Credentials, errors::{AppError, AuthErrors}, models::user::{AuthUser, User}, 
-    repos::user::{get_user_by_email_with_password, upsert_google_user}, utils::oauth_utils::{exchange_code_to_token, fetch_jwks, verify_and_decode_google_jwt}};
+use crate::{AppState, dto::auth::{Credentials, UserDto}, errors::{AppError, AuthErrors}, models::user::{User}, 
+    repos::user::{get_user_by_email_with_password, upsert_google_user}, utils::{auth_utils::{build_auth_cookie, generate_jwt}, oauth_utils::{exchange_code_to_token, fetch_jwks, verify_and_decode_google_jwt}}};
 
-pub async fn login_user(credentials: &Credentials, state: &AppState) -> Result<AuthUser, AppError> {
+pub async fn user_login(credentials: &Credentials, state: &AppState) -> Result<User, AppError> {
     let email = &credentials.email;
     let password = &credentials.password;
 
@@ -24,10 +25,10 @@ pub async fn login_user(credentials: &Credentials, state: &AppState) -> Result<A
         return Err(AuthErrors::InvalidCredentials.into());
     }
     
-    Ok(user)
+    Ok(user.into())
 }
 
-pub async fn oauth_login_user(code: String, state: &AppState) -> Result<User, AppError> {
+pub async fn oauth_login(code: String, state: &AppState) -> Result<User, AppError> {
     let id_token = exchange_code_to_token(code, &state).await?;
     let jwk_keys = fetch_jwks(&state).await?.keys;
     let token_data = verify_and_decode_google_jwt(&state, jwk_keys, &id_token)?;
@@ -43,3 +44,12 @@ pub async fn oauth_login_user(code: String, state: &AppState) -> Result<User, Ap
 
     Ok(user)
 }   
+
+pub fn auth_response(user: User, cookies: &CookieJar<'_>, state: &AppState)  -> Result<Json<UserDto>, AppError> {
+    let jwt_token = generate_jwt(user.id, &state.config.jwt_secret, state.config.session_duration)?;
+    
+    let cookie = build_auth_cookie(jwt_token, state.config.session_duration);
+    cookies.add_private(cookie);
+
+    Ok(Json(user.to_dto(state)))
+}

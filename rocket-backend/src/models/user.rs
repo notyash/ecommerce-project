@@ -25,20 +25,20 @@ pub struct User {
     pub created_at: chrono::DateTime<chrono::Utc>,
 }
 
-
-impl AuthUser {
-    pub fn to_dto(&self, state: &AppState) -> UserDto {
-        let backup_url = &state.config.backup_avatar;
-        UserDto {
-            id: self.id,
-            email: self.email.clone(),
-            name: self.full_name.clone(),
-            picture: self.avatar_url.as_deref().unwrap_or(backup_url).to_string(),
-            role: self.role.clone(),
-            is_active: self.is_active,
-            created_at: self.created_at,
+impl From<AuthUser> for User {
+    fn from(user: AuthUser) -> Self {
+        User {
+            id: user.id,
+            google_id: user.google_id,
+            email: user.email,
+            full_name: user.full_name,
+            avatar_url: user.avatar_url,
+            role: user.role,
+            is_active: user.is_active,
+            created_at: user.created_at,
         }
     }
+
 }
 
 impl User {
