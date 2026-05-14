@@ -1,4 +1,4 @@
-use rocket::Request;
+use rocket::{Request};
 use rocket::http::Status;   
 use thiserror::Error;
 use rocket::response::{self, Responder, Response};
@@ -62,7 +62,9 @@ pub enum AuthErrors {
     #[error("Unverified email provided.")]
     UnverifiedEmail,
     #[error("Invalid email or password.")]
-    InvalidCredentials
+    InvalidCredentials,
+    #[error("User already exists.")]
+    UserAlreadyExists
 }
 
 
@@ -106,7 +108,8 @@ impl <'r> Responder<'r, 'static> for AppError {
             AppError::Authorization(err) => {
                 match err {
                     AuthErrors::UnverifiedEmail => (Status::Unauthorized, err.to_string()),
-                    AuthErrors::InvalidCredentials => (Status::Unauthorized, err.to_string())
+                    AuthErrors::InvalidCredentials => (Status::Unauthorized, err.to_string()),
+                    AuthErrors::UserAlreadyExists => (Status::Unauthorized, err.to_string()),
                 }
             }
             AppError::MissingToken  => (Status::Unauthorized, "Token not found.".to_string()),

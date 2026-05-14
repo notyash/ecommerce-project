@@ -60,6 +60,7 @@ pub struct LoginCredentials {
 #[derive(Serialize)]
 pub struct UserDto {
     pub id: i32,
+    pub username: String,
     pub email: String,
     pub name: String,
     pub picture: String,
