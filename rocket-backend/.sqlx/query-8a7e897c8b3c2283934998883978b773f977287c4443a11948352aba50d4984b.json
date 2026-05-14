@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n        INSERT INTO users (google_id, email, full_name, avatar_url, role, is_active)\n        VALUES ($1, $2, $3, $4, 'user', true)\n        ON CONFLICT (email)\n        DO UPDATE SET \n            google_id = COALESCE(users.google_id, EXCLUDED.google_id),\n            full_name = EXCLUDED.full_name,\n            avatar_url = EXCLUDED.avatar_url\n        RETURNING \n            id, \n            google_id as \"google_id?\", \n            email, \n            full_name, \n            avatar_url as \"avatar_url?\", \n            role, \n            is_active, \n            created_at\n        ",
+  "query": "\n        INSERT INTO users (google_id, email, full_name, avatar_url, role, is_active, username)\n        VALUES ($1, $2, $3, $4, 'user', true, NULL)\n        ON CONFLICT (email)\n        DO UPDATE SET \n            google_id = COALESCE(users.google_id, EXCLUDED.google_id),\n            full_name = EXCLUDED.full_name,\n            avatar_url = EXCLUDED.avatar_url\n        RETURNING \n            id, \n            google_id as \"google_id?\", \n            email, \n            full_name, \n            avatar_url as \"avatar_url?\", \n            role, \n            is_active, \n            created_at,\n            username\n        ",
   "describe": {
     "columns": [
       {
@@ -42,6 +42,11 @@
         "ordinal": 7,
         "name": "created_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "username",
+        "type_info": "Varchar"
       }
     ],
     "parameters": {
@@ -60,8 +65,9 @@
       true,
       false,
       false,
-      false
+      false,
+      true
     ]
   },
-  "hash": "d95032c4787520d0e98242815abac54c53948f6d606cf292f0368a402ced88ad"
+  "hash": "8a7e897c8b3c2283934998883978b773f977287c4443a11948352aba50d4984b"
 }

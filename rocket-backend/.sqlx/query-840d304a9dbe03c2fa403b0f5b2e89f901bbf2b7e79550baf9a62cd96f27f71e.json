@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, google_id, email, full_name, avatar_url, role, is_active, created_at FROM users WHERE id = $1",
+  "query": "SELECT id, google_id, username, password_hash, email, full_name, avatar_url, role, is_active, created_at \n            FROM users WHERE\n            email = $1 AND password_hash IS NOT NULL",
   "describe": {
     "columns": [
       {
@@ -15,42 +15,54 @@
       },
       {
         "ordinal": 2,
-        "name": "email",
+        "name": "username",
         "type_info": "Varchar"
       },
       {
         "ordinal": 3,
+        "name": "password_hash",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "email",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
         "name": "full_name",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 4,
+        "ordinal": 6,
         "name": "avatar_url",
         "type_info": "Text"
       },
       {
-        "ordinal": 5,
+        "ordinal": 7,
         "name": "role",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 6,
+        "ordinal": 8,
         "name": "is_active",
         "type_info": "Bool"
       },
       {
-        "ordinal": 7,
+        "ordinal": 9,
         "name": "created_at",
         "type_info": "Timestamptz"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Text"
       ]
     },
     "nullable": [
       false,
+      true,
+      true,
       true,
       false,
       false,
@@ -60,5 +72,5 @@
       false
     ]
   },
-  "hash": "7256f2ca21b60f2f2edd38eef172ca5d2d8c6f203e705e772dcb9e22df256ef1"
+  "hash": "840d304a9dbe03c2fa403b0f5b2e89f901bbf2b7e79550baf9a62cd96f27f71e"
 }

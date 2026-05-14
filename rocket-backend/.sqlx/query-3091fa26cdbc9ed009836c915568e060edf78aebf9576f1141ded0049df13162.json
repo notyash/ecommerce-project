@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, google_id, password_hash, email, full_name, avatar_url, role, is_active, created_at \n            FROM users WHERE\n            email = $1 AND password_hash IS NOT NULL",
+  "query": "\n    INSERT INTO users (email, username, password_hash, full_name, avatar_url, role, is_active)\n    VALUES ($1, $2, $3, $4, $5, 'user', true)\n    RETURNING \n        id,\n        google_id,\n        username,\n        email,\n        full_name,\n        avatar_url,\n        role,\n        is_active,\n        created_at\n    ",
   "describe": {
     "columns": [
       {
@@ -15,8 +15,8 @@
       },
       {
         "ordinal": 2,
-        "name": "password_hash",
-        "type_info": "Text"
+        "name": "username",
+        "type_info": "Varchar"
       },
       {
         "ordinal": 3,
@@ -51,6 +51,10 @@
     ],
     "parameters": {
       "Left": [
+        "Varchar",
+        "Varchar",
+        "Text",
+        "Varchar",
         "Text"
       ]
     },
@@ -66,5 +70,5 @@
       false
     ]
   },
-  "hash": "a1daa068cc0298bb62a8dd4bb9f20860251561adcfbdc92587f6fb38bead69ef"
+  "hash": "3091fa26cdbc9ed009836c915568e060edf78aebf9576f1141ded0049df13162"
 }
