@@ -1,10 +1,10 @@
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use rocket::{http::CookieJar, serde::json::Json};
 
-use crate::{AppState, dto::auth::{Credentials, UserDto}, errors::{AppError, AuthErrors}, models::user::{User}, 
+use crate::{AppState, dto::auth::{LoginCredentials, UserDto}, errors::{AppError, AuthErrors}, models::user::{User}, 
     repos::user::{get_user_by_email_with_password, upsert_google_user}, utils::{auth_utils::{build_auth_cookie, generate_jwt}, oauth_utils::{exchange_code_to_token, fetch_jwks, verify_and_decode_google_jwt}}};
 
-pub async fn user_login(credentials: &Credentials, state: &AppState) -> Result<User, AppError> {
+pub async fn user_login(credentials: &LoginCredentials, state: &AppState) -> Result<User, AppError> {
     let email = &credentials.email;
     let password = &credentials.password;
 

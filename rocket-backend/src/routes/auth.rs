@@ -1,10 +1,9 @@
 use rocket::{State, http::{Status}, serde::json::Json};
-use crate::{AppState, dto::auth::{AuthenticatedUser, Credentials, OAuthCode, UserDto}, errors::AppError, repos::user::get_public_user_by_id, 
-    services::auth::{auth_response, oauth_login, user_login}};
+use crate::{AppState, dto::auth::{AuthenticatedUser, LoginCredentials, OAuthCode, UserDto}, errors::AppError, models::user::User, repos::user::get_public_user_by_id, services::auth::{auth_response, oauth_login, user_login}};
 use rocket::http::{Cookie, CookieJar};
 
 pub fn routes() -> Vec<rocket::Route> {
-    routes![oauth, me, logout, login]
+    routes![oauth, me, signup, logout, login]
 }
 
 #[get("/me")]
@@ -13,8 +12,13 @@ async fn me(user: AuthenticatedUser, state: &State<AppState>) -> Result<Json<Use
     Ok(Json(user_record.to_dto(&state)))
 }
 
+#[post("/signup", data="<credentials>")]
+async fn signup(credentials: Json<SignupCredentials>) -> Result<Json<UserDto>, AppError> {
+    
+}
+
 #[post("/login", data="<credentials>")]
-async fn login(cookies: &CookieJar<'_>, credentials: Json<Credentials>, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
+async fn login(cookies: &CookieJar<'_>, credentials: Json<LoginCredentials>, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
     let user = user_login(&credentials, &state).await?;
     auth_response(user, cookies, &state)
 }
