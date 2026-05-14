@@ -1,5 +1,5 @@
 import NavBar from "../components/NavBar";
-import { SignInForm } from "../components/SignInForm";
+import { SignInForm } from "../components/LoginInForm";
 import { useGoogleOAuthLogin } from "../hooks/useGoogleOAuthLogin";
 
 export default function LoginPage() {

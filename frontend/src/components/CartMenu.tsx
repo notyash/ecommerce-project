@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { CartContext, CartDispatchContext } from "../context/CartContext"
-import { Products } from "../types"
+import { Products } from "../types/cart"
 
 export default function CartMenu() {
         const cartItems = useContext(CartContext)

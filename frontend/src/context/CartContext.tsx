@@ -1,5 +1,5 @@
-import React, { createContext, useReducer, useState } from "react";
-import { CartAction, Products, SavedCarts } from "../types";
+import React, { createContext, useReducer} from "react";
+import { CartAction, Products, SavedCarts } from "../types/cart";
 
 export const CartContext = createContext<Products[]>([])
 export const CartDispatchContext = createContext<React.Dispatch<CartAction> | null> (null)

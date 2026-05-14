@@ -1,7 +1,6 @@
-use std::os::linux::raw::stat;
 
 use rocket::{State, http::{Status}, serde::json::Json};
-use crate::{AppState, dto::auth::{AuthenticatedUser, LoginCredentials, OAuthCode, SignupCredentials, UserDto}, errors::AppError, models::user::User, repos::user::get_public_user_by_id, services::auth::{auth_response, user_login, user_oauth_login, user_signup}};
+use crate::{AppState, dto::auth::{AuthenticatedUser, LoginCredentials, OAuthCode, SignupCredentials, UserDto}, errors::AppError, repos::user::get_public_user_by_id, services::auth::{auth_response, user_login, user_oauth_login, user_signup}};
 use rocket::http::{Cookie, CookieJar};
 
 pub fn routes() -> Vec<rocket::Route> {
