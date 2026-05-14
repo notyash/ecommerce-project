@@ -4,6 +4,7 @@ use crate::{AppState, dto::auth::UserDto};
 pub struct AuthUser {
     pub id: i32,
     pub password_hash: Option<String>,
+    pub username: Option<String>,
     pub google_id: Option<String>,
     pub email: String,
     pub full_name: String,
@@ -16,6 +17,7 @@ pub struct AuthUser {
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct User {
     pub id: i32,
+    pub username: Option<String>,
     pub google_id: Option<String>,
     pub email: String,
     pub full_name: String,
@@ -29,6 +31,7 @@ impl From<AuthUser> for User {
     fn from(user: AuthUser) -> Self {
         User {
             id: user.id,
+            username: user.username,
             google_id: user.google_id,
             email: user.email,
             full_name: user.full_name,
@@ -46,6 +49,7 @@ impl User {
         let backup_url = &state.config.backup_avatar;
         UserDto {
             id: self.id,
+            username: self.username.as_deref().unwrap_or("User").to_string(), //as_deref converts Option(String) to Option(&str) here
             email: self.email.clone(),
             name: self.full_name.clone(),
             picture: self.avatar_url.as_deref().unwrap_or(backup_url).to_string(),
@@ -54,4 +58,4 @@ impl User {
             created_at: self.created_at,
         }
     }
-}
+} 
