@@ -43,14 +43,24 @@ pub struct AuthenticatedUser {
 }
 
 #[derive(Deserialize)]
-pub struct Credentials {
+pub struct SignupCredentials {
+    pub username: String,
+    pub email: String,
+    pub password: String,
+    pub full_name: Option<String>
+}
+
+#[derive(Deserialize)]
+pub struct LoginCredentials {
     pub email: String,
     pub password: String,
 }
 
+
 #[derive(Serialize)]
 pub struct UserDto {
     pub id: i32,
+    pub username: String,
     pub email: String,
     pub name: String,
     pub picture: String,

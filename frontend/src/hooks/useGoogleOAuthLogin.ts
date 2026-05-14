@@ -1,5 +1,5 @@
 import { useGoogleLogin } from "@react-oauth/google";
-import { User } from "../types";
+import { User } from "../types/user";
 import { api } from "../utils/axios";
 import { useNavigate } from "@tanstack/react-router";
 

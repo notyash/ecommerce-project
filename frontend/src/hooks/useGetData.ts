@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { Products } from "../types"
+import { Products } from "../types/product"
 import { api } from "../utils/axios"
 import { AxiosError } from "axios"
 

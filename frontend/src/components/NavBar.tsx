@@ -1,5 +1,5 @@
 import { useLocation, Link } from '@tanstack/react-router'
-import { NavItem as TNavItem } from "../types";
+import { NavItem as TNavItem } from "../types/cart";
 
 const active_style = "bg-[#466EC3] text-white font-bold"
 const navItems = [

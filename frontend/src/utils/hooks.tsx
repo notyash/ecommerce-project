@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Products, AddToCart as TAddToCart } from "../types";
+import { Products, AddToCart as TAddToCart } from "../types/cart";
 import { useContext } from "react";
 import { CartDispatchContext } from "../context/CartContext";
 
