@@ -1,7 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Products, AddToCart as TAddToCart } from "../types/cart";
+import { AddToCart as TAddToCart } from "../types/cart";
 import { useContext } from "react";
 import { CartDispatchContext } from "../context/CartContext";
+import { Products } from "../types/product";
 
 function useGetCartById(userID: number = 1) {
         const {data: cartData, isError, isLoading} = useQuery<Products>({

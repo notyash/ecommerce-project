@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useGoogleOAuthLogin } from "../hooks/useGoogleOAuthLogin";
+import { useGoogleOAuthLogin } from "../hooks/useAuth";
 import { useNavigate } from "@tanstack/react-router";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/
 
 export function SignInForm() {
-    const googleLogin = useGoogleOAuthLogin();
+    const {googleLogin, isPending, isError, error} = useGoogleOAuthLogin();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
@@ -59,6 +59,7 @@ export function SignInForm() {
             <div className="flex justify-center">
               <button
                 onClick={() => googleLogin()}
+                disabled={isPending}
                 className="flex items-center justify-center bg-white w-10 h-10 rounded-full hover:bg-gray-100 transition"
               >
                 <img src="/g-logo.png" className="w-5 h-5" />
