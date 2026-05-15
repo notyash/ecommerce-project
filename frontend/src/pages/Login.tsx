@@ -1,9 +1,7 @@
 import NavBar from "../components/NavBar";
 import { SignInForm } from "../components/LoginInForm";
-import { useGoogleOAuthLogin } from "../hooks/useGoogleOAuthLogin";
 
 export default function LoginPage() {
-  const googleLogin = useGoogleOAuthLogin();
   return (
     <div>
         <NavBar></NavBar>
