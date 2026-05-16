@@ -22,6 +22,27 @@ export function useGetUser() {
     }
 }
 
+export function useLogout() {
+    const navigate = useNavigate()
+    const queryClient = useQueryClient()
+    const logoutMutation = useMutation({
+        mutationFn: async () => {
+            try {
+                const res = await api.post("/auth/logout")
+                return res.data
+            } catch {
+                throw new Error("Logout failed!")
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['me']})
+            navigate({to: "/login"})
+        },
+    })
+
+    return logoutMutation
+}
+
 export function useGoogleOAuthLogin(){
     const navigate = useNavigate()
     const queryClient = useQueryClient()
@@ -40,7 +61,7 @@ export function useGoogleOAuthLogin(){
             navigate({to: "/"})
         }
     })
-
+    
     const googleLogin = useGoogleLogin({
         flow: 'auth-code',
         scope: 'openid email profile',
