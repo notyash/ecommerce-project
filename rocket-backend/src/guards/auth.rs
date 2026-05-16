@@ -8,7 +8,7 @@ impl<'r> FromRequest<'r> for AuthenticatedUser {
     type Error = AppError;
     
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        let token = req.cookies().get_private("auth_token")
+        let token = req.cookies().get_private("auth_token") // decodes the cookie using rocket key
             .map(|cookie| cookie.value().to_string());
         match token {
             Some(t) => {
