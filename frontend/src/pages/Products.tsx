@@ -1,8 +1,8 @@
-import NavBar  from "../components/NavBar";
 import { FilterMenu } from "../components/FilterMenu";
 import ProductsMenu from "../components/ProductsMenu";
 import { useState } from "react";
 import { useGetData } from "../hooks/useGetData";
+import { NavBar } from "../components/NavBar";
 
 
 export default function ProductsPage() {
