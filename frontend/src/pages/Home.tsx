@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import NavBar from '../components/NavBar';
+import { NavBar } from '../components/NavBar';
 
 function Hero() {
 
