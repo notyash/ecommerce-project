@@ -34,8 +34,9 @@ export function useLogout() {
                 throw new Error("Logout failed!")
             }
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['me']})
+        onSuccess: async () => {
+            queryClient.setQueryData(["me"], null)
+            await queryClient.invalidateQueries({queryKey: ['me']})
             navigate({to: "/login"})
         },
     })
