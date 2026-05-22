@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotpasswordRouteImport } from './routes/forgotpassword'
@@ -32,6 +33,11 @@ const SupportRoute = SupportRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsRoute = ProductsRouteImport.update({
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/forgotpassword': typeof ForgotpasswordRoute
   '/login': typeof LoginRoute
   '/products': typeof ProductsRoute
+  '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/support': typeof SupportRoute
   '/test': typeof TestRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/forgotpassword': typeof ForgotpasswordRoute
   '/login': typeof LoginRoute
   '/products': typeof ProductsRoute
+  '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/support': typeof SupportRoute
   '/test': typeof TestRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/forgotpassword': typeof ForgotpasswordRoute
   '/login': typeof LoginRoute
   '/products': typeof ProductsRoute
+  '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/support': typeof SupportRoute
   '/test': typeof TestRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/forgotpassword'
     | '/login'
     | '/products'
+    | '/profile'
     | '/signup'
     | '/support'
     | '/test'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/forgotpassword'
     | '/login'
     | '/products'
+    | '/profile'
     | '/signup'
     | '/support'
     | '/test'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/forgotpassword'
     | '/login'
     | '/products'
+    | '/profile'
     | '/signup'
     | '/support'
     | '/test'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   ForgotpasswordRoute: typeof ForgotpasswordRoute
   LoginRoute: typeof LoginRoute
   ProductsRoute: typeof ProductsRoute
+  ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
   SupportRoute: typeof SupportRoute
   TestRoute: typeof TestRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products': {
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotpasswordRoute: ForgotpasswordRoute,
   LoginRoute: LoginRoute,
   ProductsRoute: ProductsRoute,
+  ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
   SupportRoute: SupportRoute,
   TestRoute: TestRoute,

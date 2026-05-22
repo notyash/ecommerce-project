@@ -1,71 +1,38 @@
-import { useLocation, Link, useNavigate } from '@tanstack/react-router'
-import { NavItem as TNavItem } from "../types/cart";
-import { useState } from 'react';
+import { useLocation, Link } from '@tanstack/react-router'
 import SearchBar from './SearchBar';
 
-const active_style = "bg-[#466EC3] text-white font-bold"
-const navItems = [
-  { label: "Home", path: "/" },
-  { label: "Products", path: "/products" },
-  { label: "🛒 Cart", path: "/cart" },
-  { label: "Support", path: "/support" },
-  { label: "Contact", path: "/contact" },
-  { label: "Sign In", path: "/login", type: "auth", first_render: false },
-//   { label: "Test", path: "/test"},
-]
+const activeStyle = "bg-[#466EC3]"
+const navItemStyles = "flex items-center justify-center h-11 text-white font-bold rounded p-3 hover:bg-[#466EC3] transition-all duration-500"
 
-// export function NavItem({ children, styles = "", path}: TNavItem) {
-//     const base = `rounded-lg p-3 m-1 hover:shadow-md hover:shadow-[#14213D]/50 
-//                   hover:bg-[#466EC3] text-white font-bold transition-all duration-500 ${styles}`;
-//     return (
-//         <div className={`${base} ${path === "/sign-in" ? "absolute right-6" : ""}`}>
-//             {children}
-//         </div>
-//     )
-// } 
-
-// export default function NewNavBar() {
-//     const {pathname} = useLocation();
-//     return (
-//         <nav className="fixed top-0 left-0 w-full z-10 bg-black">
-//             <Link to={"/"}><img src="/xre_logo.png" className="mt-1 absolute left-6 h-20 w-auto" /></Link>
-//             <div className="flex justify-center gap-8 p-4">
-//                 {navItems.map((item) => 
-//                 <Link to={item.path} key={item.path}>
-//                     <NavItem path={item.path} styles={pathname === item.path ? active_style : ''}>{item.label}</NavItem>
-//                 </Link>
-//                 )}
-//             </div>
-//         </nav>
-//     )
-// }
-
+function getNavClass(currentPath: string, linkPath: string) {
+    return `${navItemStyles} ${linkPath === currentPath ? activeStyle : ""}`
+}
 
 export function NavBar() {
-    const navigate = useNavigate()
-    const navItemStyles = "flex items-center justify-center h-11 text-white font-bold rounded p-3 hover:bg-[#466EC3] transition-all duration-500"
+    const {pathname} = useLocation()
+    const currentImage = pathname === "/" ? "/blue_xre_logo.png" : "/xre_logo.png"
     return (
         <nav className='fixed top-0 left-0 z-50 w-full  bg-black shadow-sm shadow-neutral-500'>
             <div className={`flex h-20 items-center justify-center gap-4 px-4`}>
                 {/* Logo */}
-                <Link to={"/"}><img src="/xre_logo.png" className="h-16" /></Link>  
+                <Link to={"/"}><img src={currentImage} className="h-16" /></Link>  
                 <SearchBar/>
                 {/* Cart */}
-                <div className={`${navItemStyles}`}>
+                <Link to='/cart' className={getNavClass(pathname, '/cart')}>
                     🛒 Cart
-                </div>
+                </Link>
                 {/* Support */}
-                <div className={`${navItemStyles}`}>
+                <Link to="/support" className={getNavClass(pathname, '/support')}>
                     Support
-                </div>
+                </Link>
                 {/* Profile */}
-                <div className={`${navItemStyles}`}>
+                <Link to="/profile" className={getNavClass(pathname, "/profile")}>
                     Profile
-                </div>
+                </Link>
                 {/* Sign In */}
-                <div className={`bg-[#466EC3] ${navItemStyles}`}>
+                <Link to="/login" className={getNavClass(pathname, "/login")}>
                     Sign In
-                </div>
+                </Link>
             </div>
         </nav>
     )
