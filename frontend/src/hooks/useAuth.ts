@@ -45,11 +45,11 @@ export function useLogout() {
     return logoutMutation
 }
 
-export function useLogin(credentials: Credentials) {
+export function useLogin() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const loginMutation = useMutation({
-        mutationFn: async () => {
+        mutationFn: async (credentials: Credentials) => {
             try {
                 const res = await api.post("/auth/login", JSON.stringify(credentials))
                 return res.data
