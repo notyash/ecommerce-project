@@ -14,7 +14,6 @@ export function SignInForm() {
     return (
       <div className="relative">
         <img className="w-full h-screen object-cover" src="/sign_in_bg.jpg" alt="bg-image" />
-        <hr className="absolute top-[89px] left-0 w-full border-t border-gray-500" />
 
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl w-[440px]">

@@ -3,8 +3,8 @@ import SearchBar from './SearchBar';
 import { useGetUser, useLogout } from '../hooks/useAuth';
 import Profile from './Profile';
 
-const activeStyle = "bg-[#466EC3]"
-const navItemStyles = "flex items-center justify-center h-11 text-white font-bold rounded p-3 hover:bg-[#466EC3] transition-all duration-500"
+const activeStyle = "text-[#466EC3]"
+const navItemStyles = "flex items-center justify-center h-11 text-white font-bold rounded p-3 hover:bg-[#466EC3] hover:text-white transition-all duration-500"
 
 function getNavClass(currentPath: string, linkPath: string) {
     return `${navItemStyles} ${linkPath === currentPath ? activeStyle : ""}`
@@ -17,7 +17,7 @@ export function NavBar() {
     const logoutMutation = useLogout()
     function AuthButton() {
         if (isLoading) { return null }
-        if (user) { return <button onClick={() => logoutMutation.mutate()} className={navItemStyles}> Logout </button> } 
+        if (user) { return <button onClick={() => logoutMutation.mutate()} className={`${navItemStyles} text-red-900`}> Logout </button> } 
         return <Link to="/login" className={getNavClass(pathname, "/login")}>Login</Link>
     }
 
@@ -25,8 +25,12 @@ export function NavBar() {
         <nav className='fixed top-0 left-0 z-50 w-full  bg-black shadow-sm shadow-neutral-500'>
             <div className={`flex h-20 items-center justify-center gap-4 px-4`}>
                 {/* Logo */}
-                <Link to={"/"}><img src={currentImage} className="h-16" /></Link>  
+                <Link to="/"><img src={currentImage} className="h-16" /></Link>  
                 <SearchBar/>
+                {/* Products */}
+                <Link to="/products" className={getNavClass(pathname, '/products')}>
+                    Products
+                </Link>
                 {/* Cart */}
                 <Link to='/cart' className={getNavClass(pathname, '/cart')}>
                     🛒 Cart
