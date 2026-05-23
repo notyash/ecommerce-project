@@ -1,6 +1,6 @@
 use crate::{AppState, errors::{AppError, AuthErrors}, models::user::{User, AuthUser}};
 
-pub async fn get_user_by_email_and_password(email: &str, state: &AppState) -> Result<AuthUser, AppError> {
+pub async fn get_auth_user_by_email(email: &str, state: &AppState) -> Result<AuthUser, AppError> {
         let user = sqlx::query_as!(AuthUser,
         r#"SELECT id, google_id, username, password_hash, email, full_name, avatar_url, role, is_active, created_at 
             FROM users WHERE
@@ -9,7 +9,6 @@ pub async fn get_user_by_email_and_password(email: &str, state: &AppState) -> Re
         .fetch_one(&state.pool)
         .await
         .map_err(|_| AppError::Authorization(AuthErrors::InvalidCredentials))?;
-
     Ok(user)
 }
 

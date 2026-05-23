@@ -50,3 +50,5 @@ test.py
 .tanstack
 backup.sql
 q
+
+bin

@@ -3,11 +3,11 @@ import SearchBar from './SearchBar';
 import { useGetUser, useLogout } from '../hooks/useAuth';
 import Profile from './Profile';
 
-const activeStyle = "text-[#466EC3]"
-const navItemStyles = "flex items-center justify-center h-11 text-white font-bold rounded p-3 hover:bg-[#466EC3] hover:text-white transition-all duration-500"
+const navItemStyles = "flex items-center justify-center h-11 font-bold rounded p-3 hover:bg-[#466EC3] hover:text-white transition-all duration-500"
 
 function getNavClass(currentPath: string, linkPath: string) {
-    return `${navItemStyles} ${linkPath === currentPath ? activeStyle : ""}`
+    const isActive = linkPath === currentPath
+    return `${navItemStyles} ${isActive ? "text-[#466EC3]" : "text-white"}`
 }
 
 export function NavBar() {

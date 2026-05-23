@@ -21,7 +21,6 @@ async fn signup(credentials: Json<SignupCredentials>, cookies: &CookieJar<'_>, s
 
 #[post("/login", data="<credentials>")]
 async fn login(cookies: &CookieJar<'_>, credentials: Json<LoginCredentials>, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
-    println!("login hit");
     let user = user_login(&credentials, &state).await?;
     auth_response(user, cookies, &state)
 }
