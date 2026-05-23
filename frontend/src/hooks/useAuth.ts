@@ -5,15 +5,22 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { Credentials } from "../types/auth";
+import axios from "axios"
 
 export function useGetUser() {
     const {isLoading, error, data, isError} = useQuery<User>({
         queryKey: ['me'],
         queryFn: async () => {
-            const response = await api.get('/auth/me')
-            return response.data
+            try {
+                const response = await api.get('/auth/me')
+                return response.data
+            } catch (err) {
+                if (axios.isAxiosError(err) && err.response?.status === 401) { return null }
+                throw err
+            }
         },
         retry: false,
+        refetchOnWindowFocus: false
     })
     return {
         isLoading,

@@ -10,6 +10,7 @@ export function SignInForm() {
     const {googleLogin, isPending} = useGoogleOAuthLogin();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState({emailError: "", passwordError: ""})
     const loginMutation = useLogin()
 
@@ -55,16 +56,19 @@ export function SignInForm() {
               onChange={(e) => setEmail(e.target.value)}/>
 
             {error.emailError && <p className="text-sm text-red-500 mb-2">{error.emailError}</p>}
-
-            <input
-              type="password"
+            <div className="relative">
+              <input
+              type={showPassword ? "text" : "password"}
               value={password}
               placeholder="Password"
-              className={`w-full bg-white/10 text-white placeholder-gray-400 border ${error.passwordError ? "border-red-500" : "border-gray-600"} rounded-lg px-4 py-3 outline-none focus:border-white transition`}
+              className={`w-full bg-white/10 text-white placeholder-gray-400 border ${error.passwordError ? "border-red-500" : "border-gray-600"} rounded-lg px-4 pr-10 py-3 outline-none focus:border-white transition`}
               onChange={(e) => setPassword(e.target.value)}
-            />
+              />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">{showPassword ? "🙈" : "👁️"}</button>
+            </div>
 
             {error.passwordError && <p className="text-sm text-red-500 mb-2">{error.passwordError}</p>}
+            {loginMutation.isError && <p className="text-sm text-red-500 mb-2">User not found!</p>}
 
             <div className="flex justify-end mt-2 mb-6">
               <Link to="/forgotpassword" className="text-gray-400 text-sm hover:text-white transition">
