@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { useGoogleOAuthLogin } from "../hooks/useAuth";
+import { useGoogleOAuthLogin, useLogin } from "../hooks/useAuth";
 import { useNavigate } from "@tanstack/react-router";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/
 
 export function SignInForm() {
-    const {googleLogin, isPending, isError, error} = useGoogleOAuthLogin();
+    const {googleLogin, isPending} = useGoogleOAuthLogin();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const loginMutation = useLogin({email: email, password: password})
 
     return (
       <div className="relative">
@@ -43,7 +44,8 @@ export function SignInForm() {
               </a>
             </div>
 
-            <button className="w-full bg-white text-black font-semibold py-3 rounded-lg hover:bg-gray-200 transition">
+            <button className="w-full bg-white text-black font-semibold py-3 rounded-lg hover:bg-gray-200 transition"
+            onClick={() => loginMutation.mutate()}>
               Sign In
             </button>
 

@@ -4,6 +4,7 @@ import { api } from "../utils/axios"
 import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
+import { Credentials } from "../types/auth";
 
 export function useGetUser() {
     const {isLoading, error, data, isError} = useQuery<User>({
@@ -42,6 +43,28 @@ export function useLogout() {
     })
 
     return logoutMutation
+}
+
+export function useLogin(credentials: Credentials) {
+    const navigate = useNavigate()
+    const queryClient = useQueryClient()
+    const loginMutation = useMutation({
+        mutationFn: async () => {
+            try {
+                const res = await api.post("/auth/login", JSON.stringify(credentials))
+                return res.data
+            } catch {
+                throw new Error("Login failed!")
+            }
+        },
+        onSuccess: async (user) => {
+            console.log(`${user.name} logged in!`)
+            queryClient.invalidateQueries({queryKey: ['me']})
+            navigate({to: "/"})
+        }
+    })
+
+    return loginMutation
 }
 
 export function useGoogleOAuthLogin(){
