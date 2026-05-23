@@ -41,7 +41,6 @@ impl From<AuthUser> for User {
             created_at: user.created_at,
         }
     }
-
 }
 
 impl User {

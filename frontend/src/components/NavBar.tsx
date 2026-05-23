@@ -1,22 +1,36 @@
 import { useLocation, Link } from '@tanstack/react-router'
 import SearchBar from './SearchBar';
+import { useGetUser, useLogout } from '../hooks/useAuth';
+import Profile from './Profile';
 
-const activeStyle = "bg-[#466EC3]"
-const navItemStyles = "flex items-center justify-center h-11 text-white font-bold rounded p-3 hover:bg-[#466EC3] transition-all duration-500"
+const navItemStyles = "flex items-center justify-center h-11 font-bold rounded p-3 hover:bg-[#466EC3] hover:text-white transition-all duration-500"
 
 function getNavClass(currentPath: string, linkPath: string) {
-    return `${navItemStyles} ${linkPath === currentPath ? activeStyle : ""}`
+    const isActive = linkPath === currentPath
+    return `${navItemStyles} ${isActive ? "text-[#466EC3]" : "text-white"}`
 }
 
 export function NavBar() {
     const {pathname} = useLocation()
+    const {data:user, isLoading} = useGetUser()
     const currentImage = pathname === "/" ? "/blue_xre_logo.png" : "/xre_logo.png"
+    const logoutMutation = useLogout()
+    function AuthButton() {
+        if (isLoading) { return null }
+        if (user) { return <button onClick={() => logoutMutation.mutate()} className={`${navItemStyles} text-red-900`}> Logout </button> } 
+        return <Link to="/login" className={getNavClass(pathname, "/login")}>Login</Link>
+    }
+
     return (
         <nav className='fixed top-0 left-0 z-50 w-full  bg-black shadow-sm shadow-neutral-500'>
             <div className={`flex h-20 items-center justify-center gap-4 px-4`}>
                 {/* Logo */}
-                <Link to={"/"}><img src={currentImage} className="h-16" /></Link>  
+                <Link to="/"><img src={currentImage} className="h-16" /></Link>  
                 <SearchBar/>
+                {/* Products */}
+                <Link to="/products" className={getNavClass(pathname, '/products')}>
+                    Products
+                </Link>
                 {/* Cart */}
                 <Link to='/cart' className={getNavClass(pathname, '/cart')}>
                     🛒 Cart
@@ -26,13 +40,9 @@ export function NavBar() {
                     Support
                 </Link>
                 {/* Profile */}
-                <Link to="/profile" className={getNavClass(pathname, "/profile")}>
-                    Profile
-                </Link>
-                {/* Sign In */}
-                <Link to="/login" className={getNavClass(pathname, "/login")}>
-                    Sign In
-                </Link>
+                {user && <Profile navclass={getNavClass(pathname, '/profile')}/>}
+                {/* Login / Logout */}
+                {<AuthButton/>}
             </div>
         </nav>
     )

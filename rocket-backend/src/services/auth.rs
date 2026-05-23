@@ -2,29 +2,26 @@ use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use rocket::{http::CookieJar, serde::json::Json};
 
 use crate::{AppState, dto::auth::{LoginCredentials, SignupCredentials, UserDto}, errors::{AppError, AuthErrors}, models::user::User, 
-    repos::user::{create_user, get_user_by_email_and_password, upsert_google_user, user_exists}, utils::{auth_utils::{build_auth_cookie, generate_jwt, hash_password}, oauth_utils::{exchange_code_to_token, fetch_jwks, verify_and_decode_google_jwt}}};
+    repos::user::{create_user, get_auth_user_by_email, upsert_google_user, user_exists}, utils::{auth_utils::{build_auth_cookie, generate_jwt, hash_password}, oauth_utils::{exchange_code_to_token, fetch_jwks, verify_and_decode_google_jwt}}};
 
 pub async fn user_login(credentials: &LoginCredentials, state: &AppState) -> Result<User, AppError> {
     let email = &credentials.email;
     let password = &credentials.password;
 
-    let user = get_user_by_email_and_password(email, &state).await?;
+    let user = get_auth_user_by_email(email, &state).await?;
 
     let stored_hash = user.password_hash
         .as_ref()
         .ok_or(AppError::Authorization(AuthErrors::InvalidCredentials))?; // no password set but trying to sign in with password
-
     let parsed_hash = PasswordHash::new(stored_hash)
     .map_err(|_| AppError::Authorization(AuthErrors::InvalidCredentials))?;
-
     let is_valid = Argon2::default()
     .verify_password(password.as_bytes(), &parsed_hash)
     .is_ok();
-
+    
     if !is_valid {
         return Err(AuthErrors::InvalidCredentials.into());
     }
-    
     Ok(user.into())
 }
 

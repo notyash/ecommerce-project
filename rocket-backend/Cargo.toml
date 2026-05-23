@@ -1,5 +1,6 @@
 [package]
 name = "rocket-backend"
+default-run = "rocket-backend"
 version = "0.1.0"
 edition = "2024"
 
