@@ -47,7 +47,7 @@ export default function ProductsMenu({products, filter}: {products?: Products[],
       const filteredData = products?.filter((data: Products) => filter.length > 0 ? filter.includes(data.category ?? "") : true)
       const productsData = filteredData?.map((product:Products) => (<ShowProducts product={product} key={product.id}></ShowProducts>))
   return (
-          <div className="flex flex-col flex-1">
+          <div className="flex flex-col">
               {productsData}
           </div>
   )
