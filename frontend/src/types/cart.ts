@@ -29,3 +29,5 @@ export type CartAction =  { type: 'ADD_ID'; payload: SavedCarts } |
                           { type: 'CLEAR_CART' }
 
 
+
+export { Products }

@@ -10,7 +10,7 @@ function getNavClass(currentPath: string, linkPath: string) {
     return `${navItemStyles} ${isActive ? "text-[#466EC3]" : "text-white"}`
 }
 
-export function NavBar() {
+export function NavBar({query, setQuery}: {query: string, setQuery: React.Dispatch<React.SetStateAction<string>>}) {
     const {pathname} = useLocation()
     const {data:user, isLoading} = useGetUser()
     const currentImage = pathname === "/" ? "/blue_xre_logo.png" : "/xre_logo.png"
@@ -26,7 +26,7 @@ export function NavBar() {
             <div className={`flex h-20 items-center justify-center gap-4 px-4`}>
                 {/* Logo */}
                 <Link to="/"><img src={currentImage} className="h-16" /></Link>  
-                <SearchBar/>
+                <SearchBar query={query} setQuery={setQuery}/>
                 {/* Products */}
                 <Link to="/products" className={getNavClass(pathname, '/products')}>
                     Products
