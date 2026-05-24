@@ -44,11 +44,12 @@ export function ShowProducts({product} : {product: Products}) {
 }
 
 export default function ProductsMenu({products, filter}: {products?: Products[], filter:string[]}) {
-      const filteredData = products?.filter((data: Products) => filter.length > 0 ? filter.includes(data.category ?? "") : true)
-      const productsData = filteredData?.map((product:Products) => (<ShowProducts product={product} key={product.id}></ShowProducts>))
-  return (
-          <div className="flex flex-col flex-1">
-              {productsData}
-          </div>
-  )
+    const filteredData = products?.filter((data: Products) => filter.length > 0 ? filter.includes(data.category ?? "") : true)
+    if (!filteredData || filteredData.length === 0) { return <p className="text-lg ml-10 mt-10">No match found</p> }
+    const productCards = filteredData?.map((product:Products) => (<ShowProducts product={product} key={product.id}></ShowProducts>))
+    return (
+        <div className="flex flex-col">
+            {productCards}
+        </div>
+    )
 }

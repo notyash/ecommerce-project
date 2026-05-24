@@ -32,11 +32,11 @@ export function FilterMenu({filter, setFilter}: {filter: string[], setFilter: (v
     }
 
     return (
-        <div className="flex flex-col w-64 sticky top-24 h-screen shrink-0 gap-1 pt-4 ml-5 bg-[#F1F3F6] shadow-md">
+        <div className="flex flex-col w-64 sticky top-24 h-full shrink-0 gap-1 pt-4 pb-2 ml-32 bg-[#F1F3F6] shadow-md">
             <h1 className="font-semibold pl-6 text-xl">Filters</h1>
             <hr className="mx-auto border-gray-300 my-3 w-56 mt-4 mb-4"></hr>
             <h2 className="font-semibold mb-3 pl-6">Categories:</h2>
-            {categories.map(category => <label key={category.label} className="accent-[#466EC3] p-1 pl-6"><input type="checkbox" checked={
+            {categories.map(category => <label key={category.label} className="accent-[#466EC3] mb-[6px] pl-6"><input type="checkbox" checked={
             filter.includes(category.label)} onChange={() => toggleFilter(category.label)}/> {category.display_name}</label>)}
         </div>
     )
