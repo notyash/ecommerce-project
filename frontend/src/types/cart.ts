@@ -27,7 +27,3 @@ export type FilteredData = {
 export type CartAction =  { type: 'ADD_ID'; payload: SavedCarts } | 
                           { type: 'REMOVE_ID'; payload: { id: number } } |
                           { type: 'CLEAR_CART' }
-
-
-
-export { Products }

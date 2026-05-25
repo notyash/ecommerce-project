@@ -1,5 +1,5 @@
 
-import { Products } from "../types/cart";
+import { Products } from "../types/product";
 import { getFreeDeliveryTill, getRandomBought } from "../utils/utils";
 import { useMutateCart } from "../utils/hooks";
 import { useContext } from "react";
