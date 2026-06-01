@@ -8,7 +8,6 @@ export default function SearchBar() {
     const liveQuery = pathname === "/products" ? true : false
 
     function searchHandler() {
-        if (!queryRef.current!.value) { return null }
         return navigate({to: "/products", replace: liveQuery, search: {query: queryRef.current!.value}})
     }
 
