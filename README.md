@@ -17,13 +17,13 @@ Built as a production-grade project — not a tutorial clone.
 
 ## Stack
 
-| Frontend | React · TypeScript · TailwindCSS · TanStack Router · TanStack Query |
+Frontend | React · TypeScript · TailwindCSS · TanStack Router · TanStack Query |
 
-| Backend | Rust · Rocket.rs · SQLx |
+Backend | Rust · Rocket.rs · SQLx |
 
-| Database | PostgreSQL |
+Database | PostgreSQL |
 
-| Infrastructure | Docker · Docker Compose |
+Infrastructure | Docker · Docker Compose |
 
 ---
 
