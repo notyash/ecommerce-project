@@ -1,0 +1,92 @@
+use crate::{AppState, dto::cart::AllProductsInCart, errors::AppError, models::cart::{Cart, CartItems, CartStatus}};
+
+pub async fn get_or_create_cart(user_id: i32, state: &AppState) -> Result<Cart, AppError> {
+    let cart = sqlx::query_as!(Cart, 
+        r#"SELECT 
+            id,
+            user_id,
+            status as "status: CartStatus",
+            created_at 
+        FROM carts 
+        WHERE user_id = $1 AND status = 'ACTIVE' 
+        "#,
+        user_id)
+        .fetch_optional(&state.pool)
+        .await?;
+    
+    match cart {
+        Some(cart) => { Ok(cart) },
+        None => { 
+            let cart = sqlx::query_as!(Cart,
+            r#"
+            INSERT INTO carts (user_id, status)
+            VALUES ($1, $2)
+            RETURNING
+                id,
+                user_id,
+                status as "status: CartStatus",
+                created_at
+            "#,
+            user_id,
+            CartStatus::Active as CartStatus)
+            .fetch_one(&state.pool)
+            .await?;
+
+            Ok(cart)
+            }
+        }
+
+}
+
+pub async fn upsert_new_product(cart_id: i32, product_id: i32, quantity: i32, current_price: bigdecimal::BigDecimal, state: &AppState) -> Result<(), AppError> {
+    sqlx::query!(
+        r#"
+        INSERT INTO cart_items (cart_id, product_id, quantity, current_price)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (cart_id, product_id)
+        DO UPDATE SET 
+            quantity = cart_items.quantity + EXCLUDED.quantity,
+            current_price = EXCLUDED.current_price
+        "#,
+        cart_id,
+        product_id,
+        quantity,
+        current_price)
+        .execute(&state.pool)
+        .await?;
+
+    Ok(())
+}
+
+pub async fn get_product_price(product_id: i32, state: &AppState) -> Result<bigdecimal::BigDecimal, AppError> {
+    let price = sqlx::query_scalar!( // query_scalar because we are getting only one value
+        r#"
+        SELECT price
+        FROM products
+        WHERE id = $1
+        "#,
+        product_id)
+        .fetch_one(&state.pool)
+        .await?;
+
+    Ok(price)
+}
+
+pub async fn get_all_products_in_cart(cart_id: i32, state: &AppState) -> Result<Vec<AllProductsInCart>, AppError> {
+    let products_in_cart = sqlx::query_as!(AllProductsInCart,
+        r#"
+        SELECT 
+            title,
+            cart_id,
+            product_id,
+            quantity,
+            current_price
+        FROM cart_items JOIN products ON cart_items.product_id = products.id
+        WHERE cart_id = $1 
+        "#,
+        cart_id)
+        .fetch_all(&state.pool)
+        .await?;
+    
+    Ok(products_in_cart)
+}
