@@ -1,9 +1,7 @@
 
+import { useAddToCart } from "../hooks/useCart";
 import { Products } from "../types/product";
 import { getFreeDeliveryTill, getRandomBought } from "../utils/utils";
-import { useMutateCart } from "../utils/hooks";
-import { useContext } from "react";
-import { CartContext } from "../context/CartContext";
 
 export function ShowProducts({product} : {product: Products}) {
     const {
@@ -14,9 +12,7 @@ export function ShowProducts({product} : {product: Products}) {
       price
         } = product
 
-    const cart = useMutateCart()
-    const cartIDs = useContext(CartContext)
-    
+    const cartMutation = useAddToCart()
     return (
         <div className={`grid grid-cols-[auto,1fr] w-full`}>
             {/* Image */}
@@ -37,7 +33,7 @@ export function ShowProducts({product} : {product: Products}) {
                 <span className="text-xs text-gray-800">Upto 5% back with the <b className="text-[#4390C7]">YashERA</b> card</span>
                 <span className="text-xs text-gray-800">FREE delivery till <b>{getFreeDeliveryTill(id)}</b></span>
                 <button className="bg-[#466EC3] text-white w-fit px-2 py-1 rounded-full hover:shadow-md hover:bg-opacity-80 mt-2 font-medium"
-                        onClick={()=> cart.mutate({cartID: 5, products: [{id: id, quantity: 1}]})}>Add to cart</button>
+                        onClick={()=> cartMutation.mutate({product_id: id, quantity: 1})}>Add to cart</button>
             </div>
     </div>
   );
