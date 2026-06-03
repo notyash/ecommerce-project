@@ -43,6 +43,7 @@ async fn main() {
         // .mount("/users", routes::users::routes())
         .mount("/", routes![index])
         .mount("/api/products", routes::products::routes())
+        .mount("/api/cart", routes::cart::routes())
         .attach(CorsFairing::new(&[
             "http://127.0.0.1:5173", "http://localhost:5173", "http://frontend:5173"
         ]))
