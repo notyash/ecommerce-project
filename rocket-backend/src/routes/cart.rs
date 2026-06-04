@@ -3,18 +3,25 @@ use crate::{AppState, dto::{auth::AuthenticatedUser, cart::{AllProductsInCart, I
             repos::cart::{get_all_products_in_cart, get_existing_cart, get_or_create_cart, get_product_price, remove_product, upsert_new_product}};
 
 pub fn routes() -> Vec<rocket::Route> {
-    routes![add_to_cart, remove_from_cart]
+    routes![add_to_cart, remove_from_cart, items_in_cart]
+}
+
+#[get("/items")]
+async fn items_in_cart(user: AuthenticatedUser, state: &State<AppState>) -> Result<Json<Vec<AllProductsInCart>>, AppError> {
+    let user_id = user.id;
+    let cart = get_or_create_cart(user_id, state.inner()).await?;
+    let products_in_cart = get_all_products_in_cart(cart.id, state).await?;
+    Ok(Json(products_in_cart))
 }
 
 #[post("/add", data="<item>")]
-async fn add_to_cart(user: AuthenticatedUser, item: Json<ItemToAddOrRemove>, state: &State<AppState>) -> Result<Json<Vec<AllProductsInCart>>, AppError> {
+async fn add_to_cart(user: AuthenticatedUser, item: Json<ItemToAddOrRemove>, state: &State<AppState>) -> Result<Status, AppError> {
     let user_id = user.id;
     let cart = get_or_create_cart(user_id, state.inner()).await?;
     let current_price = get_product_price(item.product_id, state.inner()).await?;
     upsert_new_product(cart.id, item.product_id, item.quantity, current_price, state).await?;
-    let products_in_cart = get_all_products_in_cart(cart.id, state).await?;
 
-    Ok(Json(products_in_cart))
+    Ok(Status::NoContent)
 }
 
 #[post("/remove", data="<item>")]

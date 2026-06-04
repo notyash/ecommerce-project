@@ -1,5 +1,3 @@
-use rocket::{http::Status};
-
 use crate::{AppState, dto::cart::AllProductsInCart, errors::AppError, models::cart::{Cart, CartStatus}};
 
 pub async fn get_existing_cart(user_id: i32, state: &AppState) -> Result<Cart, AppError> {
