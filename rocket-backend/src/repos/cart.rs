@@ -1,4 +1,4 @@
-use crate::{AppState, dto::cart::AllProductsInCart, errors::AppError, models::cart::{Cart, CartItems, CartStatus}};
+use crate::{AppState, dto::cart::AllProductsInCart, errors::AppError, models::cart::{Cart, CartStatus}};
 
 pub async fn get_or_create_cart(user_id: i32, state: &AppState) -> Result<Cart, AppError> {
     let cart = sqlx::query_as!(Cart, 
@@ -77,6 +77,7 @@ pub async fn get_all_products_in_cart(cart_id: i32, state: &AppState) -> Result<
         r#"
         SELECT 
             title,
+            images as "images: sqlx::types::Json<Vec<String>>",
             cart_id,
             product_id,
             quantity,

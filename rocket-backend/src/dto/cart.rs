@@ -10,6 +10,7 @@ pub struct ItemToAdd {
 #[derive(Serialize)]
 pub struct AllProductsInCart {
     pub title: String,
+    pub images: sqlx::types::Json<Vec<String>>,
     pub cart_id: i32,
     pub product_id: i32,
     pub quantity: i32,
