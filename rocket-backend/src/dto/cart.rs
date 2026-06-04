@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 
 #[derive(Deserialize)]
-pub struct ItemToAdd {
+pub struct ItemToAddOrRemove {
     pub product_id: i32,
     pub quantity: i32
 }
