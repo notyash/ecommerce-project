@@ -1,4 +1,26 @@
+use rocket::{http::Status};
+
 use crate::{AppState, dto::cart::AllProductsInCart, errors::AppError, models::cart::{Cart, CartStatus}};
+
+pub async fn get_existing_cart(user_id: i32, state: &AppState) -> Result<Cart, AppError> {
+    let cart = sqlx::query_as!(Cart, 
+    r#"SELECT 
+        id,
+        user_id,
+        status as "status: CartStatus",
+        created_at 
+    FROM carts 
+    WHERE user_id = $1 AND status = 'ACTIVE' 
+    "#,
+    user_id)
+    .fetch_optional(&state.pool)
+    .await?;
+
+    match cart {
+        Some(cart) => Ok(cart),
+        None => Err(AppError::NotFound("Cart not found".to_string()))
+    }
+}
 
 pub async fn get_or_create_cart(user_id: i32, state: &AppState) -> Result<Cart, AppError> {
     let cart = sqlx::query_as!(Cart, 
@@ -91,3 +113,18 @@ pub async fn get_all_products_in_cart(cart_id: i32, state: &AppState) -> Result<
     
     Ok(products_in_cart)
 }
+
+pub async fn remove_product(product_id: i32, cart_id: i32, state: &AppState) -> Result<(), AppError> {
+    sqlx::query!(
+    r#"
+    DELETE FROM cart_items
+    WHERE cart_id = $1 AND product_id = $2
+    "#,
+    cart_id,
+    product_id)
+    .execute(&state.pool)
+    .await?;
+
+    Ok(())
+}
+
