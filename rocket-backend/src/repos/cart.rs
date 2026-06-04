@@ -114,15 +114,37 @@ pub async fn get_all_products_in_cart(cart_id: i32, state: &AppState) -> Result<
 
 pub async fn remove_product(product_id: i32, cart_id: i32, state: &AppState) -> Result<(), AppError> {
     sqlx::query!(
-    r#"
-    DELETE FROM cart_items
-    WHERE cart_id = $1 AND product_id = $2
-    "#,
-    cart_id,
-    product_id)
-    .execute(&state.pool)
-    .await?;
+        r#"
+        DELETE FROM cart_items
+        WHERE cart_id = $1 AND product_id = $2
+        "#,
+        cart_id,
+        product_id)
+        .execute(&state.pool)
+        .await?;
 
     Ok(())
 }
 
+pub async fn remove_one_product_quantity(product_id: i32, cart_id: i32, state: &AppState) -> Result<(), AppError> {
+    let result = sqlx::query!(
+        r#"
+        UPDATE cart_items
+        SET quantity = quantity - 1
+        WHERE 
+            cart_id = $1 
+            AND product_id = $2
+            AND quantity > 1
+        "#,
+        cart_id,
+        product_id
+    )
+    .execute(&state.pool)
+    .await?;
+
+    if result.rows_affected() == 0 {
+        remove_product(product_id, cart_id, state).await?;
+    }
+
+    Ok(())
+}
