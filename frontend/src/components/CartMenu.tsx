@@ -1,11 +1,11 @@
-import { useAddToCart, useItemsInCart } from "../hooks/useCart"
+import { useAddToCart, useDecrementProductInCart, useGetItemsInCart } from "../hooks/useCart"
 import { ItemInCart } from "../types/cart"
 
 export function CartSideBar() {
-    const {itemsInCart, isLoading, isError} = useItemsInCart()
+    const {itemsInCart, isLoading, isError} = useGetItemsInCart()
     if (isLoading) return <div>Loading products added to cart!</div>
     if (isError) return null
-    const listOfAddedItems = itemsInCart?.map(item => <ShowAddedToCart item={item}/>)
+    const listOfAddedItems = itemsInCart?.map(item => <ShowAddedToCart key={item.product_id} item={item}/>)
 
     return (
             <div className="flex flex-col w-96 sticky ml-auto mr-20 top-24 h-[960px] shrink-0 gap-1 pt-4 bg-[#F1F3F6] shadow-md">
@@ -22,8 +22,9 @@ export function CartSideBar() {
 }
 
 function ShowAddedToCart({item}: {item: ItemInCart}){
-    const cartMutation = useAddToCart()
-
+    
+    const addToCartMutation = useAddToCart()
+    const decrementMutation = useDecrementProductInCart()
     return (
             <li className="grid grid-cols-[auto,1fr] w-full pb-3">
                 {/* Image */}
@@ -39,12 +40,14 @@ function ShowAddedToCart({item}: {item: ItemInCart}){
                 {/* Quantity */}
                 <div className="flex">
                     <button className="flex justify-center items-center mx-auto bg-white rounded-md w-5 h-5 shadow-md hover:shadow-lg transition-shadow duration-300"
-                            onClick={() => cartMutation.mutate({product_id: item.product_id, quantity: 1})}>
+                            onClick={() => addToCartMutation.mutate({product_id: item.product_id, quantity: 1})}
+                            disabled={addToCartMutation.isPending}>
                                 +
                     </button>
                     <p className="flex justify-center items-center mx-auto bg-white rounded-md w-5 h-5">{item.quantity}</p>
                     <button className="flex justify-center items-center mx-auto bg-white rounded-md w-5 h-5 shadow-md hover:shadow-lg transition-shadow duration-300"
-                            onClick={() => cartMutation.mutate({product_id: item.product_id, quantity: 1})}>
+                            onClick={() => decrementMutation.mutate({product_id: item.product_id})}
+                            disabled={decrementMutation.isPending}>
                                 -
                     </button>
                 </div>

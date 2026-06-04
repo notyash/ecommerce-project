@@ -2,6 +2,9 @@ export type AddToCart = {
   product_id: number
   quantity: number
 }
+export type RemoveFromCart = {
+  product_id: number
+}
 
 export type ItemInCart = {
   title: string,
