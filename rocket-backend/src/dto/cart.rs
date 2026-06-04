@@ -6,10 +6,15 @@ pub struct ItemToAdd {
     pub product_id: i32,
     pub quantity: i32
 }
+#[derive(Deserialize)]
+pub struct ItemToRemove {
+    pub product_id: i32,
+}
 
 #[derive(Serialize)]
 pub struct AllProductsInCart {
     pub title: String,
+    pub images: sqlx::types::Json<Vec<String>>,
     pub cart_id: i32,
     pub product_id: i32,
     pub quantity: i32,

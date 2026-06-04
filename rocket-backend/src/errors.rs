@@ -55,6 +55,8 @@ pub enum AppError {
     MissingToken,
     #[error("Internal Server Error")]
     Internal, // Catches All Errors
+    #[error("Not found error: {0}")]
+    NotFound(String), 
 }
 
 #[derive(Error, Debug)]
@@ -111,6 +113,9 @@ impl <'r> Responder<'r, 'static> for AppError {
                     AuthErrors::InvalidCredentials => (Status::Unauthorized, err.to_string()),
                     AuthErrors::UserAlreadyExists => (Status::Unauthorized, err.to_string()),
                 }
+            }
+            AppError::NotFound(message) => {
+                (Status::NotFound, message)
             }
             AppError::MissingToken  => (Status::Unauthorized, "Token not found.".to_string()),
             AppError::Jwt(err) => (Status::Unauthorized, err.to_string()),

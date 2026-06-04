@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT \n            id,\n            user_id,\n            status as \"status: CartStatus\",\n            created_at \n        FROM carts \n        WHERE user_id = $1 AND status = 'ACTIVE' \n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "status: CartStatus",
+        "type_info": {
+          "Custom": {
+            "name": "cart_status",
+            "kind": {
+              "Enum": [
+                "ACTIVE",
+                "CHECKED_OUT",
+                "ABANDONED",
+                "DELETED"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "9b8f6ede85d79db97bebbd96e18a9ba50b93a668c2ee22dd2812565dab15fc14"
+}

@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO cart_items (cart_id, product_id, quantity, current_price)\n        VALUES ($1, $2, $3, $4)\n        ON CONFLICT (cart_id, product_id)\n        DO UPDATE SET \n            quantity = cart_items.quantity + EXCLUDED.quantity,\n            current_price = EXCLUDED.current_price\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Int4",
+        "Numeric"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "9cd88c1a98a5bfa93ae62113f8c1e6902a6c62b4186d69c447a65f489dad2a04"
+}

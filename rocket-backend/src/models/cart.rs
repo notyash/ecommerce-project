@@ -1,4 +1,3 @@
-use serde::Serialize;
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "cart_status")]
@@ -19,12 +18,5 @@ pub struct Cart {
     pub status: CartStatus,
     pub created_at: chrono::DateTime<chrono::Utc>
 }
-#[derive(Debug, Serialize)]
-pub struct CartItems {
-    pub id: i32,
-    pub cart_id: i32,
-    pub product_id: i32,
-    pub quantity: i32,
-    pub current_price: bigdecimal::BigDecimal
-}
+
 
