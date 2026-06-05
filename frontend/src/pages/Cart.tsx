@@ -1,11 +1,11 @@
 import { NavBar } from "../components/NavBar";
-import NewCartMenu from "../components/NewCartMenu";
+import CartMenu from "../components/CartMenu";
 
 export default function CartPage() {
     return (
-        <div>
+        <div className="bg-[#EAEDED]">
             <NavBar />
-            <NewCartMenu/>
+            <CartMenu/>
         </div>  
     )
 }   
