@@ -100,8 +100,10 @@ pub async fn get_all_products_in_cart(cart_id: i32, state: &AppState) -> Result<
             images as "images: sqlx::types::Json<Vec<String>>",
             cart_id,
             product_id,
-            quantity,
-            current_price
+            quantity,   
+            current_price,
+            stock,
+            rating
         FROM cart_items JOIN products ON cart_items.product_id = products.id
         WHERE cart_id = $1 
         "#,

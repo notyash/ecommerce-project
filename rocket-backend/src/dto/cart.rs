@@ -18,5 +18,7 @@ pub struct AllProductsInCart {
     pub cart_id: i32,
     pub product_id: i32,
     pub quantity: i32,
-    pub current_price: bigdecimal::BigDecimal
+    pub current_price: bigdecimal::BigDecimal,
+    pub stock: i32,
+    pub rating: Option<f64>,
 }
