@@ -12,5 +12,7 @@ export type ItemInCart = {
   cart_id: number,
   product_id: number,
   quantity: number,
-  current_price: string
+  current_price: string,
+  rating: number | null,
+  stock: number,
 }

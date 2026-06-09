@@ -3,7 +3,7 @@ import ProductsMenu from "../components/ProductsMenu";
 import { useState } from "react";
 import { useGetData } from "../hooks/useGetData";
 import { NavBar } from "../components/NavBar";
-import { CartSideBar } from "../components/CartMenu";
+import { CartSideBar } from "../components/CartSidebar";
 import { useGetItemsInCart } from "../hooks/useCart";
 
 export default function ProductsPage({query}: {query: string}) {

@@ -18,5 +18,3 @@ pub struct Cart {
     pub status: CartStatus,
     pub created_at: chrono::DateTime<chrono::Utc>
 }
-
-

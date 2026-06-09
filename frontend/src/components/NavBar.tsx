@@ -12,9 +12,10 @@ function getNavClass(currentPath: string, linkPath: string) {
 
 export function NavBar() {
     const {pathname} = useLocation()
-    const {data:user, isLoading} = useGetUser()
+    const {user, isLoading} = useGetUser()
     const currentImage = pathname === "/" ? "/blue_xre_logo.png" : "/xre_logo.png"
     const logoutMutation = useLogout()
+
     function AuthButton() {
         if (isLoading) { return null }
         if (user) { return <button onClick={() => logoutMutation.mutate()} className={`${navItemStyles} text-red-900`}> Logout </button> } 
