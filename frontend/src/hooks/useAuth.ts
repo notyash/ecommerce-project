@@ -8,7 +8,7 @@ import { Credentials } from "../types/auth";
 import axios from "axios"
 
 export function useGetUser() {
-    const {isLoading, error, data, isError} = useQuery<User>({
+    const {isLoading, error, data: user, isError} = useQuery<User>({
         queryKey: ['me'],
         queryFn: async () => {
             try {
@@ -25,7 +25,7 @@ export function useGetUser() {
     return {
         isLoading,
         isError,
-        data,
+        user,
         error
     }
 }

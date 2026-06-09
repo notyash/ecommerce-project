@@ -1,4 +1,6 @@
 
+import { useNavigate } from "@tanstack/react-router";
+import { useGetUser } from "../hooks/useAuth";
 import { useAddToCart } from "../hooks/useCart";
 import { Products } from "../types/product";
 import { getFreeDeliveryTill, getRandomBought } from "../utils/utils";
@@ -13,6 +15,9 @@ export function ShowProducts({product} : {product: Products}) {
         } = product
 
     const cartMutation = useAddToCart()
+    const {user} = useGetUser()
+    const navigate = useNavigate()
+    
     return (
         <div className={`grid grid-cols-[auto,1fr] w-full`}>
             {/* Image */}
@@ -29,11 +34,11 @@ export function ShowProducts({product} : {product: Products}) {
                 <h3 className="font-semibold">{title}</h3>
                 <span className="text-sm">⭐{rating}</span>
                 <span className="text-xs text-gray-800">{getRandomBought(id)}k+ bought in past month</span>
-                <h2 className="font-bold text-lg">${price}</h2>
+                <h2 className="font-bold text-lg">${Number(price)?.toFixed(2)}</h2>
                 <span className="text-xs text-gray-800">Upto 5% back with the <b className="text-[#4390C7]">YashERA</b> card</span>
                 <span className="text-xs text-gray-800">FREE delivery till <b>{getFreeDeliveryTill(id)}</b></span>
                 <button className="bg-[#466EC3] text-white w-fit px-2 py-1 rounded-full hover:shadow-md hover:bg-opacity-80 mt-2 font-medium"
-                        onClick={()=> cartMutation.mutate({product_id: id, quantity: 1})}>Add to cart</button>
+                        onClick={() => user ? cartMutation.mutate({product_id: id, quantity: 1}) : navigate({to: "/login"})}>Add to cart</button>
             </div>
     </div>
   );

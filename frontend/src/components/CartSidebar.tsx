@@ -35,7 +35,7 @@ function ShowAddedToCart({item}: {item: ItemInCart}){
                 {/* Item Text */}
                 <div className="flex flex-col p-5 pl-0 h-24 m-2 gap-2 justify-center">
                     <h1 className="text-sm font-light">{item.title}</h1>
-                    <p className="font-normal">$ {item.current_price}</p>
+                    <p className="font-normal">${Number(item.current_price).toFixed(2)}</p>
                 </div>
                 {/* Quantity */}
                 <div className="flex">

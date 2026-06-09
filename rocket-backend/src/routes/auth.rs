@@ -24,7 +24,7 @@ async fn login(cookies: &CookieJar<'_>, credentials: Json<LoginCredentials>, sta
     let user = user_login(&credentials, &state).await?;
     auth_response(user, cookies, &state)
 }
-
+    
 #[post("/oauth", data="<code>")]
 async fn oauth_login(cookies: &CookieJar<'_>, code: Json<OAuthCode>, state: &State<AppState>) -> Result<Json<UserDto>, AppError> {
     // into_inner just looks at the AuthCode from the Json<AuthCode>

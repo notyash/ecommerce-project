@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 
-#[derive(serde::Serialize, sqlx::FromRow)]
+#[derive(serde::Serialize, sqlx::FromRow, Debug)]
 pub struct Product {
     pub id: i32,
     pub title: String,

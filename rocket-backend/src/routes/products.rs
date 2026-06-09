@@ -16,6 +16,7 @@ pub async fn list_products(state: &State<AppState>) -> Json<Vec<Product>> {
         .fetch_all(&state.pool)
         .await
         .unwrap();
+
     Json(products)
 }
 
