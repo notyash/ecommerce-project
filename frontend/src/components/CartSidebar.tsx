@@ -8,16 +8,23 @@ export function CartSideBar() {
     const listOfAddedItems = itemsInCart?.map(item => <ShowAddedToCart key={item.product_id} item={item}/>)
 
     return (
-            <div className="flex flex-col w-96 sticky ml-auto mr-20 top-24 h-[960px] shrink-0 gap-1 pt-4 bg-[#F1F3F6] shadow-md">
-                <div className="flex items-center pl-6 pr-6">
-                    <h1 className="font-semibold text-xl hover:bg-[#EBEBEB] p-2">Shopping Cart </h1>
-                    {/* <section className="flex items-center justify-center ml-auto bg-[#466EC3] w-7 h-7 rounded-full text-white">{itemsInCart.length}</section> */}
-                </div>
-                <hr className="mx-auto border-gray-300 my-3 w-80 mt-4 mb-4"></hr>
-                <ul className="flex flex-col pl-6">
-                    {listOfAddedItems}
-                </ul>
+        <div className="sticky top-24 self-start ml-auto mr-20 flex w-96 shrink-0 flex-col max-h-[calc(100vh-6rem)] bg-[#F1F3F6] pt-4 shadow-md">
+            <div className="flex items-center px-6">
+                <h1 className="font-semibold text-xl hover:bg-[#EBEBEB] p-2">
+                Shopping Cart
+                </h1>
+
+                <section className="flex items-center justify-center ml-auto bg-[#466EC3] w-7 h-7 rounded-full text-white">
+                {itemsInCart?.length}
+                </section>
             </div>
+
+            <hr className="mx-auto border-gray-300 my-4 w-80" />
+
+            <ul className="custom-scrollbar min-h-0 flex-1 overflow-y-auto pl-6 pb-4">
+                {listOfAddedItems}
+            </ul>
+        </div>
     )
 }
 

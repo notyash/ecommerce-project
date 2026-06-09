@@ -12,7 +12,7 @@ export default function CheckoutMenu() {
 
     const totalPrice = getTotalPriceInCart()
     return (
-        <div className="sticky top-28 self-start flex flex-col bg-white h-fit w-[250px] gap-4 pb-6">
+        <div className="sticky top-28 self-start flex flex-col bg-white h-fit w-[300px] gap-4 pb-6">
             <h1 className="text-3xl font-semibold mr-auto ml-6 mt-4">Checkout</h1>
             <hr className="w-[90%] mx-auto border-2 border-[#EEEEEE]"/>
             <div className="flex flex-col ml-6 gap-4">
