@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 
-#[derive(serde::Serialize, sqlx::FromRow, Debug)]
+#[derive(serde::Serialize, sqlx::FromRow, Debug)] // FromRow so that SQLx can build this struct from one row returned by the db
 pub struct Product {
     pub id: i32,
     pub title: String,

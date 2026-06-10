@@ -18,3 +18,8 @@ pub struct Cart {
     pub status: CartStatus,
     pub created_at: chrono::DateTime<chrono::Utc>
 }
+
+pub struct TotalPriceOfCart {
+    pub current_price: bigdecimal::BigDecimal,
+    pub quantity: i32
+} 

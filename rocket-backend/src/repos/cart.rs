@@ -1,4 +1,4 @@
-use crate::{AppState, dto::cart::AllProductsInCart, errors::AppError, models::cart::{Cart, CartStatus}};
+use crate::{AppState, dto::cart::AllProductsInCart, errors::AppError, models::cart::{Cart, CartStatus, TotalPriceOfCart}};
 
 pub async fn get_existing_cart(user_id: i32, state: &AppState) -> Result<Cart, AppError> {
     let cart = sqlx::query_as!(Cart, 
@@ -149,4 +149,18 @@ pub async fn remove_one_product_quantity(product_id: i32, cart_id: i32, state: &
     }
 
     Ok(())
+}
+
+pub async fn get_all_prices_and_quantity_in_cart(cart_id: i32, state: &AppState) -> Result<Vec<TotalPriceOfCart>, AppError> {
+    let prices_and_quantity = sqlx::query_as!(TotalPriceOfCart,
+        r#"
+        SELECT current_price, quantity from cart_items
+        WHERE cart_id = $1
+        "#,
+        cart_id
+        )
+        .fetch_all(&state.pool)
+        .await?;
+
+    Ok(prices_and_quantity)
 }
