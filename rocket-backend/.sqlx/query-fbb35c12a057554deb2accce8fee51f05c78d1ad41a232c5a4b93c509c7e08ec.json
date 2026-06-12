@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        UPDATE cart_items\n        SET quantity = quantity - 1\n        WHERE \n            cart_id = $1 \n            AND product_id = $2\n            AND quantity > 1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fbb35c12a057554deb2accce8fee51f05c78d1ad41a232c5a4b93c509c7e08ec"
+}
