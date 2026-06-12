@@ -1,4 +1,4 @@
-use crate::{AppState, dto::cart::AllProductsInCart, errors::AppError, models::cart::{Cart, CartStatus, TotalPriceOfCart}};
+use crate::{AppState, dto::cart::{AllProductsInCart}, errors::AppError, models::{cart::{Cart, CartStatus, TotalPriceOfCart}}};
 
 pub async fn get_existing_cart(user_id: i32, state: &AppState) -> Result<Cart, AppError> {
     let cart = sqlx::query_as!(Cart, 
@@ -128,7 +128,7 @@ pub async fn remove_product(product_id: i32, cart_id: i32, state: &AppState) -> 
     Ok(())
 }
 
-pub async fn remove_one_product_quantity(product_id: i32, cart_id: i32, state: &AppState) -> Result<(), AppError> {
+pub async fn decrement_product_quantity(product_id: i32, cart_id: i32, state: &AppState) -> Result<(), AppError> {
     let result = sqlx::query!(
         r#"
         UPDATE cart_items

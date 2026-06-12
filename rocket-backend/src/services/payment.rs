@@ -13,7 +13,7 @@ pub async fn calculate_total_price(cart_id: i32, state: &AppState) -> Result<big
     Ok(total_price.normalized())
 }
 
-pub async fn get_payment_intent(state: &AppState, intent_id: &str) -> Result<PaymentIntentResponse, AppError> {
+pub async fn get_payment_intent_from_stripe(state: &AppState, intent_id: &str) -> Result<PaymentIntentResponse, AppError> {
     let client = Client::new();
 
     let payment_intent_response = client.get(format!("https://api.stripe.com/v1/payment_intents/{}", intent_id))

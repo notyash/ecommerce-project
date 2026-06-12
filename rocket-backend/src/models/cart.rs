@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "cart_status")]
@@ -22,4 +24,9 @@ pub struct Cart {
 pub struct TotalPriceOfCart {
     pub current_price: bigdecimal::BigDecimal,
     pub quantity: i32
+} 
+
+#[derive(Serialize)]
+pub struct CartMutationResponse {
+    pub payment_invalidated: bool
 } 
