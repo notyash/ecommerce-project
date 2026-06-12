@@ -29,6 +29,7 @@ struct AppState {
 
 #[rocket::main]
 async fn main() {
+    println!("STARTING ROCKET BACKEND...");
     let config = Config::from_env();
     let pool = db::connect(&config.database_url).await;
     let client = Client::new();
