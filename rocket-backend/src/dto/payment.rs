@@ -17,7 +17,6 @@ pub struct EventData {
     pub object: StripeId
 }
 
-
 #[derive(Deserialize)]
 pub struct StripeId {
     pub id: String

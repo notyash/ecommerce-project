@@ -17,7 +17,6 @@ pub enum OrderStatus {
 pub struct Order {
     pub id: i32,
     pub stripe_id: String,
-    pub client_secret: String,
     pub user_id: i32,
     pub cart_id: i32,
     pub status: OrderStatus,
