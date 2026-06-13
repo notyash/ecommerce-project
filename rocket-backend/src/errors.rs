@@ -51,6 +51,8 @@ pub enum AppError {
     Database(#[from] sqlx::Error),
     #[error("JWT error: {0}")]
     Jwt(#[from] jsonwebtoken::errors::Error),
+    #[error("Reqwest error: {0}")]
+    Reqwest(#[from] reqwest::Error),
     #[error("Missing token error")]
     MissingToken,
     #[error("Internal Server Error")]
@@ -119,10 +121,11 @@ impl <'r> Responder<'r, 'static> for AppError {
             }
             AppError::MissingToken  => (Status::Unauthorized, "Token not found.".to_string()),
             AppError::Jwt(err) => (Status::Unauthorized, err.to_string()),
+            AppError::Reqwest(err) => (Status::InternalServerError, err.to_string()),
             AppError::Internal => (Status::InternalServerError, "An unexpected error occurred".to_string()),
         };
 
-        let body = json!({
+        let body = json!({  
             "status": "error",
             "message": message
         }).to_string(); // Because HTTP only accept bytes (strings). Can't send rust enum/json struct

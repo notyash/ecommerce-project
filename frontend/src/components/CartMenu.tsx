@@ -1,8 +1,8 @@
-import { Link } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { useAddToCart, useDecrementProductInCart, useGetItemsInCart } from "../hooks/useCart"
 import { ItemInCart } from "../types/cart"
 import { getFreeDeliveryTill} from "../utils/utils"
-import CheckoutMenu from "./CheckoutMenu"
+import EmptyCart from "./EmptyCart"
 
 export default function CartMenu() {
     const {itemsInCart, isLoading, isError} = useGetItemsInCart()
@@ -22,18 +22,31 @@ export default function CartMenu() {
     )
 }
 
-function EmptyCart() {
+function CheckoutMenu() {
+    const navigate = useNavigate()
+    const {itemsInCart} = useGetItemsInCart()
+    function getTotalPriceInCart() {
+        let totalPrice = 0
+        for (const item of itemsInCart ?? []) { totalPrice += Number(item.current_price) * item.quantity; }
+        const formattedTotalPrice = totalPrice.toFixed(2);
+        return formattedTotalPrice
+    }   
+
+    const totalPrice = getTotalPriceInCart()
     return (
-        <div className="flex flex-col items-center justify-center min-h-[600px] gap-4 text-center">
-            <div className="text-7xl">🛒</div>
-            <h2 className="text-2xl font-semibold text-gray-800">Your cart is empty</h2>
-            <p className="text-gray-500">Looks like you haven’t added anything yet.</p>
-            <Link to="/products" className="mt-2 rounded-md bg-[#466EC3] px-5 py-2 text-white font-medium hover:bg-[#3b5da5] transition">
-                Browse Products 
-            </Link>
+        <div className="sticky top-28 self-start flex flex-col bg-white h-fit w-[300px] gap-4 pb-6">
+            <h1 className="text-3xl font-semibold mr-auto ml-6 mt-4">Checkout</h1>
+            <hr className="w-[90%] mx-auto border-2 border-[#EEEEEE]"/>
+            <div className="flex flex-col ml-6 gap-4">
+                <span className="flex text-lg">Subtotal ({itemsInCart?.length} items): <p className="font-bold ml-2">${totalPrice}</p></span>
+                <button 
+                    className="flex items-center justify-center w-[200px] border rounded-lg p-1 bg-yellow-300 hover:bg-yellow-400 transition-all duration-500"
+                    onClick={() => navigate({to: "/checkout"})}>Proceed to buy</button>
+            </div>
         </div>
     )
 }
+
 
 function ProductListings() {
     const {itemsInCart, isLoading, isError} = useGetItemsInCart()

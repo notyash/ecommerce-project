@@ -29,6 +29,7 @@ struct AppState {
 
 #[rocket::main]
 async fn main() {
+    println!("STARTING ROCKET BACKEND...");
     let config = Config::from_env();
     let pool = db::connect(&config.database_url).await;
     let client = Client::new();
@@ -44,6 +45,7 @@ async fn main() {
         .mount("/", routes![index])
         .mount("/api/products", routes::products::routes())
         .mount("/api/cart", routes::cart::routes())
+        .mount("/api/payment", routes::payment::routes())
         .attach(CorsFairing::new(&[
             "http://127.0.0.1:5173", "http://localhost:5173", "http://frontend:5173"
         ]))

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n        SELECT \n            title,\n            images as \"images: sqlx::types::Json<Vec<String>>\",\n            cart_id,\n            product_id,\n            quantity,\n            current_price\n        FROM cart_items JOIN products ON cart_items.product_id = products.id\n        WHERE cart_id = $1 \n        ",
+  "query": "\n        SELECT \n            title,\n            images as \"images: sqlx::types::Json<Vec<String>>\",\n            cart_id,\n            product_id,\n            quantity,   \n            current_price,\n            stock,\n            rating\n        FROM cart_items JOIN products ON cart_items.product_id = products.id\n        WHERE cart_id = $1 \n        ",
   "describe": {
     "columns": [
       {
@@ -32,6 +32,16 @@
         "ordinal": 5,
         "name": "current_price",
         "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "stock",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "rating",
+        "type_info": "Float8"
       }
     ],
     "parameters": {
@@ -45,8 +55,10 @@
       false,
       false,
       false,
-      false
+      false,
+      false,
+      true
     ]
   },
-  "hash": "24d4e0f0180b64c9260c379a7337a1815d4198c62df620e0d43d4667b79a847e"
+  "hash": "17d95067d937687335d4dc50150dba68ca7c36ead97939e36756216b53b2f678"
 }

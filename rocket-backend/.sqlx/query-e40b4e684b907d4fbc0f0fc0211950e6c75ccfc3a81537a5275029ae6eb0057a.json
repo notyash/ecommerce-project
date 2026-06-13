@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE carts\n            SET status = 'CHECKED_OUT'\n            WHERE\n                id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e40b4e684b907d4fbc0f0fc0211950e6c75ccfc3a81537a5275029ae6eb0057a"
+}

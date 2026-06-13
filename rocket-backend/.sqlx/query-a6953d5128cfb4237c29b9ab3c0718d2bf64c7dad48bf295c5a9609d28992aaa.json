@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE orders\n            SET status = 'SUCCESS'\n            WHERE\n                stripe_id = $1\n            RETURNING\n                cart_id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "cart_id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "a6953d5128cfb4237c29b9ab3c0718d2bf64c7dad48bf295c5a9609d28992aaa"
+}
