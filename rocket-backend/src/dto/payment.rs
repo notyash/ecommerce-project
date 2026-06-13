@@ -1,9 +1,12 @@
 use serde::{Deserialize, Serialize};
 
+use crate::models::payment::OrderStatus;
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct PaymentIntentResponse {
     pub id: String,
     pub client_secret: String,
+    pub status: OrderStatus
 }
 
 #[derive(Deserialize)]

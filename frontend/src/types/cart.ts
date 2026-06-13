@@ -16,9 +16,3 @@ export type ItemInCart = {
   rating: number | null,
   stock: number,
 }
-
-export type PaymentIntent = {
-  id: string,
-  client_secret: string,
-  status: string
-}

@@ -1,6 +1,5 @@
 use rocket::{State, http::Status, serde::json::Json};
-use crate::{AppState, dto::{auth::AuthenticatedUser, payment::{EventObject, PaymentIntentResponse}}, errors::AppError,
- repos::{cart::get_or_create_cart, payment::{get_pending_order, mark_existing_order_cancelled, update_order_failed, update_order_succeeded}}, services::payment::{calculate_total_price, cancel_payment_intent, create_order, get_payment_intent_from_stripe}};
+use crate::{AppState, dto::{auth::AuthenticatedUser, payment::{EventObject, PaymentIntentResponse}}, errors::AppError, repos::{cart::get_or_create_cart, payment::{get_pending_order, mark_existing_order_cancelled, update_order_failed, update_order_succeeded}}, services::payment::{calculate_total_price, cancel_payment_intent, create_order, get_payment_intent_from_stripe}};
 
 pub fn routes() -> Vec<rocket::Route> {
     routes![stripe, webhook]
@@ -23,7 +22,8 @@ async fn stripe(user: AuthenticatedUser, state: &State<AppState>) -> Result<Json
             let payment_intent = get_payment_intent_from_stripe(state.inner(), &existing_order.stripe_id).await?;
             Ok(Json(PaymentIntentResponse{
             client_secret: payment_intent.client_secret,
-            id: existing_order.stripe_id
+            id: existing_order.stripe_id,
+            status: existing_order.status 
         }))},
         None => {
             let order = create_order(current_total_amount, state.inner(), user.id, cart.id).await?;
