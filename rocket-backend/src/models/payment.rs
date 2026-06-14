@@ -1,4 +1,3 @@
-
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, sqlx::Type, Serialize, Deserialize)]
@@ -10,7 +9,6 @@ pub enum OrderStatus {
     Success,
     #[sqlx(rename="FAILED")]
     Failed,
-
 }
 
 #[derive(Debug, Serialize)]

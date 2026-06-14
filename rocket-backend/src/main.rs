@@ -16,6 +16,7 @@ mod services;
 use config::Config;
 use reqwest::Client;
 use crate::{db::DbPool, errors::default_catcher, fairings::CorsFairing};
+use colored::{control};
 
 #[get("/")]
 fn index() -> &'static str {
@@ -30,6 +31,8 @@ struct AppState {
 #[rocket::main]
 async fn main() {
     println!("STARTING ROCKET BACKEND...");
+    control::set_override(true); // to show eprintln! text as red
+
     let config = Config::from_env();
     let pool = db::connect(&config.database_url).await;
     let client = Client::new();

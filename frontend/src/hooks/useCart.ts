@@ -83,9 +83,8 @@ export function useCheckoutCart() {
                 throw new Error("Unable to retrieve client_secret from stripe!")
             }
         },
-        onSuccess: (res) => {
+        onSuccess: () => {
             console.log(`Successfully retrieved client_secret`)
-            console.log(res)
         }
     })
 

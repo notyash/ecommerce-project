@@ -1,7 +1,7 @@
 use bigdecimal::{BigDecimal, ToPrimitive};
 use reqwest::Client;
 use rocket::http::Status;
-use crate::{AppState, dto::payment::PaymentIntentResponse, errors::AppError, repos::{cart::get_all_prices_and_quantity_in_cart, payment::save_order}};
+use crate::{AppState, dto::payment::{PaymentIntentResponse, StripePaymentIntent}, errors::AppError, models::payment::OrderStatus, repos::{cart::get_all_prices_and_quantity_in_cart, payment::save_order}};
 
 
 pub async fn calculate_total_price(cart_id: i32, state: &AppState) -> Result<bigdecimal::BigDecimal, AppError> {
@@ -27,9 +27,8 @@ pub async fn get_payment_intent_from_stripe(state: &AppState, intent_id: &str) -
     Ok(payment_intent_response)
 }
 
-pub async fn create_payment_intent(total_price_in_cents: i64, state: &AppState) -> Result<PaymentIntentResponse, reqwest::Error> {
+pub async fn create_payment_intent(total_price_in_cents: i64, state: &AppState) -> Result<StripePaymentIntent, reqwest::Error> {
     let client = Client::new();
-    
     let payment_intent_response = client.post("https://api.stripe.com/v1/payment_intents")
         .basic_auth(&state.config.stripe_secret, Some(""))
         .form(&[
@@ -39,7 +38,7 @@ pub async fn create_payment_intent(total_price_in_cents: i64, state: &AppState) 
         .send()
         .await?
         .error_for_status()?
-        .json::<PaymentIntentResponse>()
+        .json::<StripePaymentIntent>()
         .await?;
 
     Ok(payment_intent_response)
@@ -67,5 +66,5 @@ pub async fn create_order(total_amount: BigDecimal, state: &AppState, user_id: i
     let payment_res = create_payment_intent(total_amount_in_cents, state).await?;
     save_order(state, &payment_res.id, user_id, cart_id, &total_amount).await?;
 
-    Ok(payment_res)
+    Ok(PaymentIntentResponse { id: payment_res.id, client_secret: payment_res.client_secret, status: OrderStatus::Pending })
 }

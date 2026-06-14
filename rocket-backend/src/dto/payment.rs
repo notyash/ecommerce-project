@@ -8,6 +8,11 @@ pub struct PaymentIntentResponse {
     pub client_secret: String,
     pub status: OrderStatus
 }
+#[derive(Debug, Deserialize)]
+pub struct StripePaymentIntent {
+    pub id: String,
+    pub client_secret: String   ,
+}
 
 #[derive(Deserialize)]
 pub struct EventObject {
