@@ -2,7 +2,7 @@ use bigdecimal::{BigDecimal, ToPrimitive};
 use colored::Colorize;
 use reqwest::Client;
 use rocket::http::Status;
-use crate::{AppState, dto::payment::{PaymentIntentResponse, StripePaymentIntent}, errors::AppError::{self, Payment}, models::payment::OrderStatus, repos::{cart::get_all_prices_and_quantity_in_cart, payment::{mark_existing_order_cancelled, save_order}}};
+use crate::{AppState, dto::payment::{Currency, PaymentIntentResponse, StripePaymentIntent}, errors::AppError::{self}, models::payment::OrderStatus, repos::{cart::get_all_prices_and_quantity_in_cart, payment::{mark_existing_order_cancelled, save_order}}};
 
 
 pub async fn calculate_total_price(cart_id: i32, state: &AppState) -> Result<bigdecimal::BigDecimal, AppError> {
@@ -34,20 +34,19 @@ pub async fn get_payment_intent_from_stripe(state: &AppState, user_id: i32, cart
     Ok(payment_intent)
 }
 
-pub async fn create_payment_intent(amount_in_base_unit: i64, state: &AppState, currency: &str) -> Result<StripePaymentIntent, AppError> {
+pub async fn create_payment_intent(amount_in_base_unit: i64, state: &AppState, currency: &Currency) -> Result<StripePaymentIntent, AppError> {
     let client = Client::new();
-    let mut form: Vec<(&str, String)> = vec![("amount", amount_in_base_unit.to_string()), ("currency", currency.to_string())];
+    let mut form: Vec<(&str, String)> = vec![("amount", amount_in_base_unit.to_string()), ("currency", currency.as_str().to_string())];
 
     match currency {
-        "inr" => {
+        Currency::Inr => {
             form.push(("payment_method_types[]", "upi".to_string()));
             form.push(("payment_method_types[]", "card".to_string()));
         },
-        "usd" => {
+        Currency::Usd => {
             form.push(("payment_method_types[]", "amazon_pay".to_string()));
             form.push(("payment_method_types[]", "card".to_string()));
-        },
-        _ => return Err(Payment("Invalid currency provided!".into()))
+        }
     }
 
     let payment_intent_response = client.post("https://api.stripe.com/v1/payment_intents")
@@ -80,7 +79,7 @@ pub async fn cancel_payment_intent(intent_id: &str, state: &AppState) -> Result<
 
 }
 
-pub async fn create_order(total_amount: BigDecimal, state: &AppState, user_id: i32, cart_id: i32, currency: &str) -> Result<PaymentIntentResponse, AppError>{
+pub async fn create_order(total_amount: BigDecimal, state: &AppState, user_id: i32, cart_id: i32, currency: &Currency) -> Result<PaymentIntentResponse, AppError>{
     let amount_in_base_unit = (&total_amount * BigDecimal::from(100))
         .normalized()
         .to_i64()

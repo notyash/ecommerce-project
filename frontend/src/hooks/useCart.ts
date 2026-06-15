@@ -1,7 +1,7 @@
 import { api } from "../utils/axios"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AddToCart, ItemInCart, RemoveFromCart } from "../types/cart";
-import { PaymentIntent } from "../types/payment";
+import { Currency, PaymentIntent } from "../types/payment";
 import axios from "axios";
 
 export function useGetItemsInCart() {
@@ -76,9 +76,9 @@ export function useDecrementProductInCart() {
 export function useCheckoutCart() {
     // const queryClient = useQueryClient()
     const checkoutMutation = useMutation({
-        mutationFn: async (currency: string) => {
+        mutationFn: async (currency: Currency) => {
             try {
-                const res = await api.post("/payment/stripe", currency)
+                const res = await api.post("/payment/stripe", { currency })
                 return res.data as PaymentIntent
             } catch (error) {
                 if (axios.isAxiosError(error)) {

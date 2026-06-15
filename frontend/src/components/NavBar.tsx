@@ -15,6 +15,8 @@ export function NavBar() {
     const {user, isLoading} = useGetUser()
     const currentImage = pathname === "/" ? "/blue_xre_logo.png" : "/xre_logo.png"
     const logoutMutation = useLogout()
+    const currency = useCurrencyStore((state) => state.currency);
+    const changeCurrency = useCurrencyStore((state) => state.changeCurrency); 
 
     function AuthButton() {
         if (isLoading) { return null }
@@ -42,6 +44,10 @@ export function NavBar() {
                 </Link>
                 {/* Profile */}
                 {user && <Profile navclass={getNavClass(pathname, '/profile')}/>}
+
+                {/* Currency Dropdown */}
+                {["/", "/cart", "/products", "/profile"].includes(pathname) && <CurrencyDropdown currency={currency} onChange={changeCurrency} />}
+
                 {/* Login / Logout */}
                 {<AuthButton/>}
             </div>

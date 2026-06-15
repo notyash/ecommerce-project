@@ -58,3 +58,23 @@ pub struct StripeId {
     pub id: String
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Currency {
+    Inr,
+    Usd,
+}
+
+impl Currency {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Inr => "inr",
+            Self::Usd => "usd"
+        }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct CheckoutRequest {
+    pub currency: Currency
+}
