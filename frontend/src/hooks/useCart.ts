@@ -2,6 +2,7 @@ import { api } from "../utils/axios"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AddToCart, ItemInCart, RemoveFromCart } from "../types/cart";
 import { PaymentIntent } from "../types/payment";
+import axios from "axios";
 
 export function useGetItemsInCart() {
     const { data: itemsInCart, isLoading, isError} = useQuery<ItemInCart[]>({
@@ -75,12 +76,19 @@ export function useDecrementProductInCart() {
 export function useCheckoutCart() {
     // const queryClient = useQueryClient()
     const checkoutMutation = useMutation({
-        mutationFn: async (cart_id: number) => {
+        mutationFn: async (currency: string) => {
             try {
-                const res = await api.post("/payment/stripe", cart_id)
+                const res = await api.post("/payment/stripe", currency)
                 return res.data as PaymentIntent
-            } catch {
-                throw new Error("Unable to retrieve client_secret from stripe!")
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.error("Stripe backend error:", error.response?.data)
+
+                    throw new Error(
+                        error.response?.data || "Unable to retrieve client_secret from Stripe!"
+                    )
+                }
+                throw error
             }
         },
         onSuccess: () => {
