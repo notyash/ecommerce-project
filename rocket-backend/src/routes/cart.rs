@@ -1,18 +1,27 @@
 use rocket::{State, http::Status, serde::json::Json};
-use crate::{AppState, dto::{auth::AuthenticatedUser, cart::{AllProductsInCart, ItemToAdd, ItemToRemove}}, errors::AppError,
- repos::{cart::{get_all_products_in_cart, get_existing_cart, get_or_create_cart, get_product_price, decrement_product_quantity, remove_product, upsert_new_product}}, 
- services::{cart::invalidate_pending_checkout_if_exists}};
+use crate::{AppState, dto::{auth::AuthenticatedUser, cart::{AllProductsInCart, ItemToAdd, ItemToRemove}, payment::Currency}, errors::AppError,
+ repos::cart::{decrement_product_quantity, get_all_products_in_cart, get_existing_cart, get_or_create_cart, get_product_price, remove_product, upsert_new_product}, 
+ services::{cart::invalidate_pending_checkout_if_exists, payment::convert_usd_to_inr}};
 
 pub fn routes() -> Vec<rocket::Route> {
     routes![add_product_to_cart, remove_product_from_cart, get_all_items_in_cart, decrement_product_in_cart]
 }
 
-#[get("/items")]
-async fn get_all_items_in_cart(user: AuthenticatedUser, state: &State<AppState>) -> Result<Json<Vec<AllProductsInCart>>, AppError> {
+#[get("/items?<currency>")]
+async fn get_all_items_in_cart(user: AuthenticatedUser, state: &State<AppState>, currency: Currency) -> Result<Json<Vec<AllProductsInCart>>, AppError> {
     let user_id = user.id;
     let cart = get_or_create_cart(user_id, state.inner()).await?;
-    let products_in_cart = get_all_products_in_cart(cart.id, state).await?;
-    Ok(Json(products_in_cart))
+    let mut products_in_cart = get_all_products_in_cart(cart.id, state).await?;
+    match currency {
+        Currency::Inr => { 
+            let conversion_rate = &state.inner().config.usd_to_inr_rate;
+            for product in products_in_cart.iter_mut() {
+                product.current_price = convert_usd_to_inr(conversion_rate, product.current_price.clone());
+            }
+            Ok(Json(products_in_cart))
+         },
+        Currency::Usd => { Ok(Json(products_in_cart)) }
+    }
 }
 
 #[post("/add", data="<item>")]

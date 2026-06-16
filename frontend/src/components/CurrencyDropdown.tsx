@@ -1,29 +1,31 @@
 import { useState } from "react";
-import { Currency, CurrencyDropdownProps } from "../types/payment";
+import { Currency, CurrencyDropdownProps, CurrencySymbol } from "../types/payment";
 
 export default function CurrencyDropdown({ // understood and made changes to code given by AI
   currency,
-  onChange,
+  onCurrencyChange,
+  onSymbolChange,
 }: CurrencyDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const options = {
     inr: {
-      symbol: "₹",
-      code: "INR",
+      symbol: "₹" as CurrencySymbol,
+      code: "inr" as Currency,
     },
     usd: {
-      symbol: "$",
-      code: "USD",
+      symbol: "$" as CurrencySymbol,
+      code: "usd" as Currency,
     },
-  };
+  }
 
   const selected = options[currency];
 
-  const handleSelect = (newCurrency: Currency) => {
-    onChange(newCurrency);
-    setIsOpen(false);
-  };
+  const handleSelect = (newCurrency: Currency, newSymbol: CurrencySymbol) => {
+    onCurrencyChange(newCurrency)
+    onSymbolChange(newSymbol)
+    setIsOpen(false)
+  }
 
   return (
     <div className="relative w-fit">
@@ -41,7 +43,7 @@ export default function CurrencyDropdown({ // understood and made changes to cod
       >
         <div className="flex items-center gap-3">
             <span className="text-lg">{selected.symbol}</span>
-            <p className="text-sm font-bold text-white">{selected.code}</p>
+            <p className="text-sm font-bold text-white">{selected.code.toUpperCase()}</p>
             <span className={`text-white transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>▼</span>
         </div>
 
@@ -54,13 +56,13 @@ export default function CurrencyDropdown({ // understood and made changes to cod
           const isSelected = currency === option;
 
           return (
-            <button key={option} type="button" onClick={() => handleSelect(option)}
+            <button key={option} type="button" onClick={() => handleSelect(item.code, item.symbol)}
                 className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition duration-150
                     ${isSelected ? "bg-blue-50 text-blue-700" : "text-gray-800 hover:bg-gray-100"}`}>
 
               <span className="text-lg">{item.symbol}</span>
               <div>
-                <p className="text-sm font-semibold">{item.code}</p>
+                <p className="text-sm font-semibold">{item.code.toUpperCase()}</p>
               </div>
             </button>
           );

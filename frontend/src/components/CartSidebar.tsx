@@ -1,12 +1,12 @@
 import { useAddToCart, useDecrementProductInCart, useGetItemsInCart } from "../hooks/useCart"
 import { ItemInCart } from "../types/cart"
+import { Currency } from "../types/payment";
 
-export function CartSideBar() {
-    const {itemsInCart, isLoading, isError} = useGetItemsInCart()
+export function CartSideBar({currency, symbol}:{currency: Currency, symbol: string}) {
+    const {itemsInCart, isLoading, isError} = useGetItemsInCart(currency)
     if (isLoading) return <div>Loading products added to cart!</div>
     if (isError) return null
-    const listOfAddedItems = itemsInCart?.map(item => <ShowAddedToCart key={item.product_id} item={item}/>)
-
+    const listOfAddedItems = itemsInCart?.map(item => <ShowAddedToCart key={item.product_id} item={item} symbol={symbol}/>)
     return (
         <div className="sticky top-24 self-start ml-auto mr-20 flex w-96 shrink-0 flex-col max-h-[calc(100vh-6rem)] bg-[#F1F3F6] pt-4 shadow-md">
             <div className="flex items-center px-6">
@@ -28,8 +28,7 @@ export function CartSideBar() {
     )
 }
 
-function ShowAddedToCart({item}: {item: ItemInCart}){
-    
+function ShowAddedToCart({item, symbol}: {item: ItemInCart, symbol: string}){
     const addToCartMutation = useAddToCart()
     const decrementMutation = useDecrementProductInCart()
     return (
@@ -42,7 +41,7 @@ function ShowAddedToCart({item}: {item: ItemInCart}){
                 {/* Item Text */}
                 <div className="flex flex-col p-5 pl-0 h-24 m-2 gap-2 justify-center">
                     <h1 className="text-sm font-light">{item.title}</h1>
-                    <p className="font-normal">${Number(item.current_price).toFixed(2)}</p>
+                    <p className="font-normal">{symbol}{Number(item.current_price).toFixed(2)}</p>
                 </div>
                 {/* Quantity */}
                 <div className="flex">

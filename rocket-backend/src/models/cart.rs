@@ -1,6 +1,3 @@
-use serde::Serialize;
-
-
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "cart_status")]
 pub enum CartStatus {

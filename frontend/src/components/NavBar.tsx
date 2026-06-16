@@ -2,8 +2,10 @@ import { useLocation, Link } from '@tanstack/react-router'
 import SearchBar from './SearchBar';
 import { useGetUser, useLogout } from '../hooks/useAuth';
 import Profile from './Profile';
+import CurrencyDropdown from './CurrencyDropdown';
+import { useCurrencyStore } from '../store/currencyStore';
 
-const navItemStyles = "flex items-center justify-center h-11 font-bold rounded p-3 hover:bg-[#466EC3] hover:text-white transition-all duration-500"
+const navItemStyles = "flex items-center justify-center h-11 font-bold rounded-md p-3 hover:bg-[#466EC3] hover:text-white transition-all duration-500"
 
 function getNavClass(currentPath: string, linkPath: string) {
     const isActive = linkPath === currentPath
@@ -17,6 +19,7 @@ export function NavBar() {
     const logoutMutation = useLogout()
     const currency = useCurrencyStore((state) => state.currency);
     const changeCurrency = useCurrencyStore((state) => state.changeCurrency); 
+    const changeSymbol= useCurrencyStore((state) => state.changeCurrencySymbol); 
 
     function AuthButton() {
         if (isLoading) { return null }
@@ -46,7 +49,7 @@ export function NavBar() {
                 {user && <Profile navclass={getNavClass(pathname, '/profile')}/>}
 
                 {/* Currency Dropdown */}
-                {["/", "/cart", "/products", "/profile"].includes(pathname) && <CurrencyDropdown currency={currency} onChange={changeCurrency} />}
+                {["/", "/cart", "/products", "/profile"].includes(pathname) && <CurrencyDropdown currency={currency} onCurrencyChange={changeCurrency} onSymbolChange={changeSymbol}/>}
 
                 {/* Login / Logout */}
                 {<AuthButton/>}

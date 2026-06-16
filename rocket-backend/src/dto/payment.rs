@@ -58,7 +58,7 @@ pub struct StripeId {
     pub id: String
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, Copy, FromFormField)]
 #[serde(rename_all = "lowercase")]
 pub enum Currency {
     Inr,

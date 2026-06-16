@@ -1,4 +1,4 @@
-use bigdecimal::{BigDecimal, ToPrimitive};
+use bigdecimal::{BigDecimal, ToPrimitive, RoundingMode};
 use colored::Colorize;
 use reqwest::Client;
 use rocket::http::Status;
@@ -89,4 +89,8 @@ pub async fn create_order(total_amount: BigDecimal, state: &AppState, user_id: i
     save_order(state, &payment_res.id, user_id, cart_id, &total_amount).await?;
 
     Ok(PaymentIntentResponse { id: payment_res.id, client_secret: payment_res.client_secret, status: OrderStatus::Pending })
+}
+
+pub fn convert_usd_to_inr(conversion_rate: &BigDecimal, usd: BigDecimal) -> BigDecimal { // TODO: Add live fetching of conversion rate from API later
+    (usd * conversion_rate).with_scale_round(2, RoundingMode::HalfUp)
 }

@@ -1,12 +1,15 @@
 import { useQuery } from "@tanstack/react-query"
 import { Products } from "../types/product"
 import { api } from "../utils/axios"
+import { Currency } from "../types/payment"
 
-export function useGetData() {
+export function useGetAllProducts(currency: Currency) {
         const { data: productsData, isLoading, isError} = useQuery<Products[]>({
-        queryKey: ['products'], 
+        queryKey: ['products', currency], 
         queryFn: async () => {
-            const res = await api.get('/products')
+            const res = await api.get('/products', {
+                params: {currency}
+            })
             return res.data
         },
         staleTime: Infinity
@@ -14,15 +17,17 @@ export function useGetData() {
         return {productsData, isLoading, isError}
 }
 
-export function useGetDataById(productID: number) {
+export function useGetProductById(productID: number, currency: Currency) {
         const { data: productData, isLoading, isError} = useQuery<Products>({
-        queryKey: ['products', productID], 
+        queryKey: ['products', productID, currency], 
         queryFn: async () => {
-            const res = await api.get(`/products/${productID}`)
+            const res = await api.get(`/products/${productID}`, {
+                params: {currency}
+            })
             return res.data
         },
         staleTime: Infinity,    
-        enabled: !!productID
+        enabled: productID > 0
         })
         return {productData, isLoading, isError}
 }
