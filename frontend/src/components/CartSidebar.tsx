@@ -1,8 +1,8 @@
 import { useAddToCart, useDecrementProductInCart, useGetItemsInCart } from "../hooks/useCart"
 import { ItemInCart } from "../types/cart"
-import { Currency } from "../types/payment";
+import { Currency, CurrencySymbol } from "../types/payment";
 
-export function CartSideBar({currency, symbol}:{currency: Currency, symbol: string}) {
+export function CartSideBar({currency, symbol}:{currency: Currency, symbol: CurrencySymbol}) {
     const {itemsInCart, isLoading, isError} = useGetItemsInCart(currency)
     if (isLoading) return <div>Loading products added to cart!</div>
     if (isError) return null
@@ -28,7 +28,7 @@ export function CartSideBar({currency, symbol}:{currency: Currency, symbol: stri
     )
 }
 
-function ShowAddedToCart({item, symbol}: {item: ItemInCart, symbol: string}){
+function ShowAddedToCart({item, symbol}: {item: ItemInCart, symbol: CurrencySymbol}){
     const addToCartMutation = useAddToCart()
     const decrementMutation = useDecrementProductInCart()
     return (

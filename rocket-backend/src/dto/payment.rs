@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
-use crate::models::payment::OrderStatus;
 
 
-#[derive(Debug, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Deserialize, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentIntentStatus {
     RequiresPaymentMethod,
@@ -32,14 +31,7 @@ impl PaymentIntentStatus {
 pub struct PaymentIntentResponse {
     pub id: String,
     pub client_secret: String,
-    pub status: OrderStatus
-}
-
-#[derive(Debug, Deserialize)]
-pub struct StripePaymentIntent {
-    pub id: String,
-    pub client_secret: String,
-    pub status: PaymentIntentStatus,
+    pub status: PaymentIntentStatus
 }
 
 #[derive(Deserialize)]
@@ -58,8 +50,10 @@ pub struct StripeId {
     pub id: String
 }
 
-#[derive(Debug, Deserialize, Clone, Copy, FromFormField)]
+#[derive(Debug, Deserialize, Clone, Copy, FromFormField, sqlx::Type, Serialize, PartialEq)]
 #[serde(rename_all = "lowercase")]
+#[sqlx(rename_all = "lowercase")]
+#[sqlx(type_name = "selected_currency")]
 pub enum Currency {
     Inr,
     Usd,
@@ -74,7 +68,7 @@ impl Currency {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, PartialEq)]
 pub struct CheckoutRequest {
     pub currency: Currency
 }

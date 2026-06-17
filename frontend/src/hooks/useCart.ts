@@ -1,6 +1,6 @@
 import { api } from "../utils/axios"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AddToCart, ItemInCart, RemoveFromCart } from "../types/cart";
+import { ModifyCartDTO, ItemInCart } from "../types/cart";
 import { Currency, PaymentIntent } from "../types/payment";
 import axios from "axios";
 
@@ -21,7 +21,7 @@ export function useGetItemsInCart(currency: Currency) {
 export function useAddToCart() {
     const queryClient = useQueryClient()
     const addToCartMutation = useMutation({
-        mutationFn: async (itemToAdd: AddToCart) => {
+        mutationFn: async (itemToAdd: ModifyCartDTO) => {
         await api.post("/cart/add", itemToAdd)
 
         },
@@ -40,7 +40,7 @@ export function useAddToCart() {
 export function useRemoveFromCart() {
     const queryClient = useQueryClient()
     const removeFromCartMutation = useMutation({
-        mutationFn: async (itemToRemove: RemoveFromCart) => {
+        mutationFn: async (itemToRemove: ModifyCartDTO) => {
             await api.post("/cart/remove", itemToRemove)
         },
         onSuccess: () => {
@@ -58,7 +58,7 @@ export function useRemoveFromCart() {
 export function useDecrementProductInCart() {
     const queryClient = useQueryClient()
     const decrementCartMutation = useMutation({
-        mutationFn: async (itemToRemove: RemoveFromCart) => {
+        mutationFn: async (itemToRemove: ModifyCartDTO) => {
             await api.post("/cart/decrement", itemToRemove)
         },
         onSuccess: () => {
@@ -83,7 +83,7 @@ export function useCheckoutCart() {
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     console.error("Stripe backend error:", error.response?.data)
-
+        
                     throw new Error(
                         error.response?.data || "Unable to retrieve client_secret from Stripe!"
                     )

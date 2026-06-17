@@ -1,9 +1,8 @@
-export type AddToCart = {
+import { Currency } from "./payment"
+
+export type ModifyCartDTO = {
   product_id: number
-  quantity: number
-}
-export type RemoveFromCart = {
-  product_id: number
+  quantity?: number,
 }
 
 export type ItemInCart = {

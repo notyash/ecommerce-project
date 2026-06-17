@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::dto::payment::Currency;
+
 #[derive(Debug, sqlx::Type, Serialize, Deserialize)]
 #[sqlx(type_name = "order_status")]
 pub enum OrderStatus {
@@ -20,4 +22,5 @@ pub struct Order {
     pub status: OrderStatus,
     pub total_amount: bigdecimal::BigDecimal,
     pub created_at: chrono::DateTime<chrono::Utc>,
+    pub currency: Currency
 }
