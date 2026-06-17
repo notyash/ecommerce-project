@@ -21,7 +21,7 @@ pub async fn calculate_total_price(cart_id: i32, state: &AppState, currency: Cur
     Ok(total_price.normalized())
 }
 
-pub async fn get_payment_intent_from_stripe(state: &AppState, user_id: i32, cart_id: i32, stripe_id: &str) -> Result<PaymentIntentResponse, AppError> {
+pub async fn get_payment_intent_from_stripe(state: &AppState, user_id: i32, stripe_id: &str) -> Result<PaymentIntentResponse, AppError> {
     let client = Client::new();
 
     let payment_intent = client.get(format!("https://api.stripe.com/v1/payment_intents/{}", stripe_id))
@@ -32,10 +32,11 @@ pub async fn get_payment_intent_from_stripe(state: &AppState, user_id: i32, cart
         .json::<PaymentIntentResponse>()
         .await?;
 
+    eprintln!("{} {:?}", "status:".red(), payment_intent.status);
     if !payment_intent.status.can_initialize_elements() {
         eprintln!("{:}", "expired intent".red());
-        mark_existing_order_cancelled(state, user_id, cart_id, stripe_id).await?;
-        return Err(AppError::Payment("Payment intent expired/marked cancelled".into()))
+        mark_existing_order_cancelled(state, user_id, stripe_id).await?;
+        return Err(AppError::Payment("Payment intent expired / marked cancelled".into()))
     }
 
     Ok(payment_intent)

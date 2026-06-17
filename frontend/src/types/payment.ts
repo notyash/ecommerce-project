@@ -4,7 +4,11 @@ export type PaymentIntent = {
   status: string
 }
 
+export type PaymentIntentStatus = | 'requires_payment_method' | 'requires_confirmation' | 'requires_action' | 'processing'
+                                  | 'requires_capture' | 'canceled' | 'succeeded' | 'unknown'
+
 export type Currency = "inr" | "usd";
+
 export type CurrencySymbol = "₹" | "$";
 
 export type CurrencyDropdownProps = {

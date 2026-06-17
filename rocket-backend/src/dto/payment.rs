@@ -7,8 +7,8 @@ pub enum PaymentIntentStatus {
     RequiresPaymentMethod,
     RequiresConfirmation,
     RequiresAction,
-    Processing,
     RequiresCapture,
+    Processing,
     Canceled,
     Succeeded,
 
@@ -22,7 +22,11 @@ impl PaymentIntentStatus {
             self,
             Self::RequiresPaymentMethod |
             Self::RequiresConfirmation |
-            Self::RequiresAction
+            Self::RequiresAction |
+            Self::RequiresCapture |
+            Self::Processing |
+            Self::Canceled |
+            Self::Succeeded 
         )
     }
 }

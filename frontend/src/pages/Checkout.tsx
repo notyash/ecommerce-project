@@ -1,5 +1,5 @@
 import {loadStripe} from '@stripe/stripe-js';
-import { useCheckoutCart, useGetItemsInCart } from '../hooks/useCart';
+import { useGetItemsInCart } from '../hooks/useCart';
 import { NavBar } from '../components/NavBar';
 import CheckoutForm from '../components/CheckoutForm';
 import { useEffect, useState } from 'react';
@@ -8,6 +8,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import type { Appearance} from "@stripe/stripe-js";
 import { Currency } from '../types/payment';
 import { useCurrencyStore } from '../store/currencyStore';
+import { useCheckoutCart } from '../hooks/usePayment';
 
 const stripePromise = loadStripe('pk_test_51TgWTnCDwNSYTeMmNEDxD93Dgljk3QCUDiuISDeJsvA3KVooaqSz6ht6uQw1tUbf8QOS43edALoBM2EQozQWbQo300sJA7SfRg');
 

@@ -28,7 +28,7 @@ export function NavBar() {
     }
 
     return (
-        <nav className='fixed top-0 left-0 z-50 w-full  bg-black shadow-sm shadow-neutral-500'>
+        <nav className='fixed top-0 left-0 z-50 w-full bg-black shadow-sm shadow-neutral-500'>
             <div className={`flex h-20 items-center justify-center gap-4 px-4`}>
                 {/* Logo */}
                 <Link to="/"><img src={currentImage} className="h-16" /></Link>  

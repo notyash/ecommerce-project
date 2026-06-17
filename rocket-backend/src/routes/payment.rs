@@ -1,9 +1,9 @@
 use rocket::{State, http::Status, serde::json::Json};
-use crate::{AppState, dto::{auth::AuthenticatedUser, payment::{CheckoutRequest, EventObject, PaymentIntentResponse}}, errors::AppError, repos::{cart::get_or_create_cart, payment::{get_pending_order, mark_existing_order_cancelled, update_order_failed, update_order_succeeded}}, services::payment::{calculate_total_price, cancel_payment_intent, create_order, get_payment_intent_from_stripe}};
+use crate::{AppState, dto::{auth::AuthenticatedUser, payment::{CheckoutRequest, EventObject, PaymentIntentResponse, PaymentIntentStatus}}, errors::AppError, repos::{cart::get_or_create_cart, payment::{get_pending_order, mark_existing_order_cancelled, update_order_failed, update_order_succeeded}}, services::payment::{calculate_total_price, cancel_payment_intent, create_order, get_payment_intent_from_stripe}};
 
 
 pub fn routes() -> Vec<rocket::Route> {
-    routes![stripe, webhook]
+    routes![stripe, webhook, status]
 }
 
 #[post("/stripe", data="<request>")]
@@ -16,11 +16,11 @@ async fn stripe(user: AuthenticatedUser, state: &State<AppState>, request: Json<
         Some(existing_order) => {
             if current_total_amount != existing_order.total_amount || request.currency != existing_order.currency { 
                 let order = create_order(current_total_amount, state.inner(), user.id, cart.id, request.currency).await?;
-                mark_existing_order_cancelled(state.inner(), user.id, cart.id, &existing_order.stripe_id).await?;
+                mark_existing_order_cancelled(state.inner(), user.id, &existing_order.stripe_id).await?;
                 cancel_payment_intent(&existing_order.stripe_id, state.inner()).await?;
                 return Ok(Json(order))
             }
-            let payment_intent = get_payment_intent_from_stripe(state.inner(), user.id, cart.id, &existing_order.stripe_id).await?;
+            let payment_intent = get_payment_intent_from_stripe(state.inner(), user.id, &existing_order.stripe_id).await?;
             Ok(Json(PaymentIntentResponse{
                 client_secret: payment_intent.client_secret,
                 id: existing_order.stripe_id,
@@ -50,4 +50,10 @@ async fn webhook(state: &State<AppState>, event: Json<EventObject>) -> Result<St
         },
         _ => Ok(Status::NoContent)
     }
+}
+
+#[get("/status?<stripe_id>")]
+pub async fn status(user: AuthenticatedUser, stripe_id: String, state: &State<AppState>) -> Result<Json<PaymentIntentStatus>, AppError> {
+    let payment_intent = get_payment_intent_from_stripe(state.inner(), user.id, &stripe_id).await?;
+    Ok(Json(payment_intent.status))
 }

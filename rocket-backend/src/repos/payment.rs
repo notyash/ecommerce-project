@@ -46,19 +46,17 @@ pub async fn get_pending_order(state: &AppState, user_id: i32, cart_id: i32) -> 
     Ok(order)
 }
 
-pub async fn mark_existing_order_cancelled(state: &AppState, user_id: i32, cart_id: i32, stripe_id: &str) -> Result<(), AppError> {
+pub async fn mark_existing_order_cancelled(state: &AppState, user_id: i32, stripe_id: &str) -> Result<(), AppError> {
     sqlx::query!(
         r#"
         UPDATE orders
         set status = 'CANCELLED'
         WHERE
             user_id = $1 AND
-            cart_id = $2 AND
-            stripe_id = $3 AND
+            stripe_id = $2 AND
             status = 'PENDING'
         "#,
         user_id,
-        cart_id,
         stripe_id
     )
     .execute(&state.pool)

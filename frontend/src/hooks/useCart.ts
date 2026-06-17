@@ -73,28 +73,3 @@ export function useDecrementProductInCart() {
     return decrementCartMutation
 }
 
-export function useCheckoutCart() {
-    // const queryClient = useQueryClient()
-    const checkoutMutation = useMutation({
-        mutationFn: async (currency: Currency) => {
-            try {
-                const res = await api.post("/payment/stripe", { currency })
-                return res.data as PaymentIntent
-            } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    console.error("Stripe backend error:", error.response?.data)
-        
-                    throw new Error(
-                        error.response?.data || "Unable to retrieve client_secret from Stripe!"
-                    )
-                }
-                throw error
-            }
-        },
-        onSuccess: () => {
-            console.log(`Successfully retrieved client_secret`)
-        }
-    })
-
-    return checkoutMutation
-}

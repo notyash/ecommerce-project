@@ -9,7 +9,7 @@ pub async fn invalidate_pending_checkout_if_exists(state: &AppState, user_id: i3
 
     match pending_order {
         Some(order) => {
-            mark_existing_order_cancelled(state, user_id, cart_id, &order.stripe_id).await?;
+            mark_existing_order_cancelled(state, user_id, &order.stripe_id).await?;
             if let Err(err) = cancel_payment_intent(&order.stripe_id, state).await {
                 eprintln!("Failed to cancel stale Stripe PaymentIntent {}: {:?}", order.stripe_id, err)
             }
