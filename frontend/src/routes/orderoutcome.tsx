@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import OrderOutcome from '../pages/OrderOutcome'
+import PaymentResultPage from '../pages/PaymentResult'
+import { NavBar } from '../components/NavBar'
 
 type PaymentResultSearch = {
   payment_intent?: string
@@ -17,5 +18,12 @@ export const Route = createFileRoute('/orderoutcome')({
 
 function RouteComponent() {
   const search = Route.useSearch()
-  return <OrderOutcome stripe_id={search.payment_intent}/>
+  return (
+    <div>
+      <NavBar/>
+      <div className='pt-20'>
+        <PaymentResultPage stripe_id={search.payment_intent}/>
+      </div>
+    </div>
+    )
   }

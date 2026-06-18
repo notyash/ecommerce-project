@@ -1,8 +1,7 @@
 import { api } from "../utils/axios"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ModifyCartDTO, ItemInCart } from "../types/cart";
-import { Currency, PaymentIntent } from "../types/payment";
-import axios from "axios";
+import { Currency } from "../types/payment";
 
 export function useGetItemsInCart(currency: Currency) {
     const { data: itemsInCart, isLoading, isError} = useQuery<ItemInCart[]>({

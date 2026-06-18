@@ -1,7 +1,9 @@
-import { NavBar } from "../components/NavBar"
+import { PaymentResult, } from "../components/PaymentResults"
 import { useGetPaymentStatus } from "../hooks/usePayment"
 
-export default function OrderOutcome({stripe_id}: {stripe_id?: string}) {
+const FAILED_COLOR = "text-red-900"
+
+export default function PaymentResultPage({stripe_id}: {stripe_id?: string}) {
     const {data: paymentStatus, error, refetch, isError, isLoading} = useGetPaymentStatus(stripe_id) 
 
     if (isLoading) return <div>Verifying your payment status...</div>
@@ -21,39 +23,24 @@ export default function OrderOutcome({stripe_id}: {stripe_id?: string}) {
 
     if (!paymentStatus) return <div>The server returned an unexpected response. Your payment may still be processing.</div>
 
-    let outcomeMessage: string
 
     switch (paymentStatus) { 
         case "succeeded":
-            outcomeMessage = "Payment successful."
-            break
+            return <PaymentResult message="Payment successful."/>
+            
         case "processing":
-            outcomeMessage = "Your payment is still processing."
-            break
+            return <PaymentResult message="Your payment is still processing."/>
 
         case "requires_payment_method":
-            outcomeMessage = "Payment failed. Please try another payment method."
-            break
+            return <PaymentResult message="Payment failed. Please try another payment method." color={FAILED_COLOR} failed={true}/>
 
         case "requires_action":
-            outcomeMessage = "Your payment requires additional confirmation."
-            break
+            return <PaymentResult message="Your payment requires additional confirmation." color={FAILED_COLOR} failed={true}/>
 
         case "canceled":
-            outcomeMessage = "This payment was cancelled."
-            break
+            return <PaymentResult message="This payment was cancelled." color={FAILED_COLOR} failed={true}/>
 
         default:
-            outcomeMessage = `Payment status: ${paymentStatus}`
-
+            return <PaymentResult message={`Payment status: ${paymentStatus}`} color={FAILED_COLOR} failed={true}/>
     }
-
-    return (
-        <div>
-            <NavBar/>
-            <div className="pt-20">
-                {outcomeMessage}
-            </div>
-        </div>
-    )
 }

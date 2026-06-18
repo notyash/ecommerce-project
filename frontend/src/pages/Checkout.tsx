@@ -27,7 +27,6 @@ const appearance: Appearance = {
 export default function CheckoutPage() { // TODO: Add websockets to read status changes from backend to improve UX when cart changes mid checkout  
                                          // TODO: Update the minimum amount in stripe for payments
     const currency = useCurrencyStore((state) => state.currency);
-    const currency_symbol = useCurrencyStore((state) => state.symbol)
     const {itemsInCart, isLoading, isError} = useGetItemsInCart(currency)
     const {mutateAsync} = useCheckoutCart()
     const [clientSecret, setClientSecret] = useState<string | null>(null)
