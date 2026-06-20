@@ -13,6 +13,7 @@ import { Route as SupportRouteImport } from './routes/support'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as OrderoutcomeRouteImport } from './routes/orderoutcome'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotpasswordRouteImport } from './routes/forgotpassword'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -38,6 +39,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const ProductsRoute = ProductsRouteImport.update({
   id: '/products',
   path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderoutcomeRoute = OrderoutcomeRouteImport.update({
+  id: '/orderoutcome',
+  path: '/orderoutcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/forgotpassword': typeof ForgotpasswordRoute
   '/login': typeof LoginRoute
+  '/orderoutcome': typeof OrderoutcomeRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/forgotpassword': typeof ForgotpasswordRoute
   '/login': typeof LoginRoute
+  '/orderoutcome': typeof OrderoutcomeRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/forgotpassword': typeof ForgotpasswordRoute
   '/login': typeof LoginRoute
+  '/orderoutcome': typeof OrderoutcomeRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/forgotpassword'
     | '/login'
+    | '/orderoutcome'
     | '/products'
     | '/profile'
     | '/signup'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/forgotpassword'
     | '/login'
+    | '/orderoutcome'
     | '/products'
     | '/profile'
     | '/signup'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/forgotpassword'
     | '/login'
+    | '/orderoutcome'
     | '/products'
     | '/profile'
     | '/signup'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   ForgotpasswordRoute: typeof ForgotpasswordRoute
   LoginRoute: typeof LoginRoute
+  OrderoutcomeRoute: typeof OrderoutcomeRoute
   ProductsRoute: typeof ProductsRoute
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
@@ -188,6 +201,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orderoutcome': {
+      id: '/orderoutcome'
+      path: '/orderoutcome'
+      fullPath: '/orderoutcome'
+      preLoaderRoute: typeof OrderoutcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   ForgotpasswordRoute: ForgotpasswordRoute,
   LoginRoute: LoginRoute,
+  OrderoutcomeRoute: OrderoutcomeRoute,
   ProductsRoute: ProductsRoute,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,

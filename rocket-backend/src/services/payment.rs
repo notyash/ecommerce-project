@@ -1,22 +1,30 @@
-use bigdecimal::{BigDecimal, ToPrimitive};
+use bigdecimal::{BigDecimal, ToPrimitive, RoundingMode};
+use colored::Colorize;
 use reqwest::Client;
 use rocket::http::Status;
-use crate::{AppState, dto::payment::{PaymentIntentResponse, StripePaymentIntent}, errors::AppError, models::payment::OrderStatus, repos::{cart::get_all_prices_and_quantity_in_cart, payment::save_order}};
+use crate::{AppState, dto::payment::{Currency, PaymentIntentResponse}, errors::AppError::{self}, repos::{cart::get_all_prices_and_quantity_in_cart, payment::{mark_existing_order_cancelled, save_order}}};
 
 
-pub async fn calculate_total_price(cart_id: i32, state: &AppState) -> Result<bigdecimal::BigDecimal, AppError> {
+pub async fn calculate_total_price(cart_id: i32, state: &AppState, currency: Currency) -> Result<bigdecimal::BigDecimal, AppError> {
     let prices_and_quantity = get_all_prices_and_quantity_in_cart(cart_id, state).await?;
-    let mut total_price: BigDecimal = BigDecimal::from(0);
+    let mut total_price = BigDecimal::from(0);
     for item in prices_and_quantity {
-        total_price += item.current_price *  BigDecimal::from(item.quantity)
+        match currency {
+            Currency::Inr => {
+                let price = convert_usd_to_inr(&state.config.usd_to_inr_rate, item.current_price);
+                total_price += price *  BigDecimal::from(item.quantity)
+            },
+            Currency::Usd => total_price += item.current_price *  BigDecimal::from(item.quantity)
+        }
     }   
+
     Ok(total_price.normalized())
 }
 
-pub async fn get_payment_intent_from_stripe(state: &AppState, intent_id: &str) -> Result<PaymentIntentResponse, AppError> {
+pub async fn get_payment_intent_from_stripe(state: &AppState, user_id: i32, stripe_id: &str) -> Result<PaymentIntentResponse, AppError> {
     let client = Client::new();
 
-    let payment_intent_response = client.get(format!("https://api.stripe.com/v1/payment_intents/{}", intent_id))
+    let payment_intent = client.get(format!("https://api.stripe.com/v1/payment_intents/{}", stripe_id))
         .basic_auth(&state.config.stripe_secret, Some(""))
         .send()
         .await?
@@ -24,24 +32,46 @@ pub async fn get_payment_intent_from_stripe(state: &AppState, intent_id: &str) -
         .json::<PaymentIntentResponse>()
         .await?;
 
-    Ok(payment_intent_response)
+    eprintln!("{} {:?}", "status:".red(), payment_intent.status);
+    if !payment_intent.status.can_initialize_elements() {
+        eprintln!("{:}", "expired intent".red());
+        mark_existing_order_cancelled(state, user_id, stripe_id).await?;
+        return Err(AppError::Payment("Payment intent expired / marked cancelled".into()))
+    }
+
+    Ok(payment_intent)
 }
 
-pub async fn create_payment_intent(total_price_in_cents: i64, state: &AppState) -> Result<StripePaymentIntent, reqwest::Error> {
+pub async fn create_payment_intent(amount_in_base_unit: i64, state: &AppState, currency: Currency) -> Result<PaymentIntentResponse, AppError> {
     let client = Client::new();
+    let mut form: Vec<(&str, String)> = vec![("amount", amount_in_base_unit.to_string()), ("currency", currency.as_str().to_string())];
+
+    match currency {
+        Currency::Inr => {
+            form.push(("payment_method_types[]", "upi".to_string()));
+            form.push(("payment_method_types[]", "card".to_string()));
+        },
+        Currency::Usd => {
+            form.push(("payment_method_types[]", "amazon_pay".to_string()));
+            form.push(("payment_method_types[]", "card".to_string()));
+        }
+    }
+
     let payment_intent_response = client.post("https://api.stripe.com/v1/payment_intents")
         .basic_auth(&state.config.stripe_secret, Some(""))
-        .form(&[
-            ("amount", total_price_in_cents.to_string()),
-            ("currency", "usd".to_string()),       
-        ])
+        .form(&form)
         .send()
-        .await?
-        .error_for_status()?
-        .json::<StripePaymentIntent>()
         .await?;
 
-    Ok(payment_intent_response)
+    let status = payment_intent_response.status();
+    let body = payment_intent_response.text().await?;
+
+    if !status.is_success() { return Err(AppError::Payment(body)) }
+
+    let payment_intent: PaymentIntentResponse = serde_json::from_str(&body)
+        .map_err(|err| AppError::Payment(err.to_string()))?;
+    
+    Ok(payment_intent)
 }
 
 pub async fn cancel_payment_intent(intent_id: &str, state: &AppState) -> Result<Status, AppError> {
@@ -57,14 +87,18 @@ pub async fn cancel_payment_intent(intent_id: &str, state: &AppState) -> Result<
 
 }
 
-pub async fn create_order(total_amount: BigDecimal, state: &AppState, user_id: i32, cart_id: i32) -> Result<PaymentIntentResponse, AppError>{
-    let total_amount_in_cents = (&total_amount * BigDecimal::from(100))
+pub async fn create_order(total_amount: BigDecimal, state: &AppState, user_id: i32, cart_id: i32, currency: Currency) -> Result<PaymentIntentResponse, AppError>{
+    let amount_in_base_unit = (&total_amount * BigDecimal::from(100))
         .normalized()
         .to_i64()
-        .ok_or(AppError::Internal)?;
+        .ok_or(AppError::Internal("Invalid amount".into()))?;
 
-    let payment_res = create_payment_intent(total_amount_in_cents, state).await?;
-    save_order(state, &payment_res.id, user_id, cart_id, &total_amount).await?;
+    let payment_res = create_payment_intent(amount_in_base_unit, state, currency).await?;
+    save_order(state, &payment_res.id, user_id, cart_id, &total_amount, currency).await?;
 
-    Ok(PaymentIntentResponse { id: payment_res.id, client_secret: payment_res.client_secret, status: OrderStatus::Pending })
+    Ok(PaymentIntentResponse { id: payment_res.id, client_secret: payment_res.client_secret, status: payment_res.status })
+}
+
+pub fn convert_usd_to_inr(conversion_rate: &BigDecimal, usd: BigDecimal) -> BigDecimal { // TODO: Add live fetching of conversion rate from API later
+    (usd * conversion_rate).with_scale_round(2, RoundingMode::HalfUp)
 }

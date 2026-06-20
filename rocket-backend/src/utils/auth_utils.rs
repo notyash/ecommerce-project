@@ -12,7 +12,7 @@ pub fn generate_jwt(sub: i32, secret_key: &str, session_duration: i64) -> Result
 
     let token = jsonwebtoken::encode(&jsonwebtoken::Header::default(), &claims,
 &jsonwebtoken::EncodingKey::from_secret(secret_key.as_ref()))
-    .map_err(|_|AppError::Internal)?;
+    .map_err(|_|AppError::Internal("Failed to generate JWT".into()))?;
 
     Ok(token)
 }

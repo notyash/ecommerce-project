@@ -51,7 +51,7 @@ pub async fn fetch_jwks(state: &AppState) -> Result<JwksResponse, JwksError> {
 }
 
 pub fn verify_and_decode_google_jwt(state: &AppState, jwk_keys: Vec<Jwk>, id_token: &str) -> Result<TokenData<GoogleClaims>, AppError> {
-    let header = jsonwebtoken::decode_header(id_token).map_err(|_| AppError::Internal)?;
+    let header = jsonwebtoken::decode_header(id_token).map_err(|_| AppError::Internal("Failed to decode google jwt headers".into()))?;
     let kid = header.kid.ok_or_else(|| { // closure only runs when kid is None
                         AppError::Jwk(JwksError::ParseError(
                         serde_json::Error::custom("Missing 'kid' in JWT header")))})?;
@@ -61,13 +61,13 @@ pub fn verify_and_decode_google_jwt(state: &AppState, jwk_keys: Vec<Jwk>, id_tok
                                 })?;
 
     let decoding_key = jsonwebtoken::DecodingKey::from_rsa_components(&jwk.n, &jwk.e)
-                                        .map_err(|_| AppError::Internal)?; // Rivest-Shamir-Adleman to verify the key
+                                        .map_err(|_| AppError::Internal("Failed to decode google JWT".into()))?; // Rivest-Shamir-Adleman to verify the key
 
     let mut validation = jsonwebtoken::Validation::new(jsonwebtoken::Algorithm::RS256);
     validation.set_audience(&[state.config.oauth_client.clone()]);
     validation.set_issuer(&["https://accounts.google.com", "accounts.google.com"]);
 
     let token_data  = jsonwebtoken::decode::<GoogleClaims>(&id_token, &decoding_key, &validation)
-                                                                                    .map_err(|_| AppError::Internal)?;
+                                                                                    .map_err(|_| AppError::Internal("Failed to extract data from the google JWT".into()))?;
     Ok(token_data)
 }

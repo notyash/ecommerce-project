@@ -1,17 +1,18 @@
 use bigdecimal::BigDecimal;
-use crate::{AppState, errors::AppError, models::payment::{Order, OrderStatus}};
+use crate::{AppState, dto::payment::Currency, errors::AppError, models::payment::{Order, OrderStatus}};
 
-pub async fn save_order(state: &AppState, stripe_id: &str, user_id: i32, cart_id: i32, total_amount: &BigDecimal) -> Result<(), AppError> {
+pub async fn save_order(state: &AppState, stripe_id: &str, user_id: i32, cart_id: i32, total_amount: &BigDecimal, currency: Currency) -> Result<(), AppError> {
     sqlx::query!(
         r#"
-        INSERT INTO orders (stripe_id, user_id, cart_id, status, total_amount)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO orders (stripe_id, user_id, cart_id, status, total_amount, currency)
+        VALUES ($1, $2, $3, $4, $5, $6)
         "#,
         stripe_id,
         user_id,
         cart_id,
         OrderStatus::Pending as OrderStatus,
         total_amount,
+        currency as Currency
         )
         .execute(&state.pool)
         .await?;
@@ -29,14 +30,15 @@ pub async fn get_pending_order(state: &AppState, user_id: i32, cart_id: i32) -> 
         cart_id,
         status as "status: OrderStatus",
         total_amount,
-        created_at
+        created_at,
+        currency as "currency: Currency"
     FROM orders
     WHERE user_id = $1
     AND cart_id = $2
-    AND status = 'PENDING' 
+    AND status = 'PENDING'
     "#,
     user_id,
-    cart_id
+    cart_id,
     )
     .fetch_optional(&state.pool)
     .await?;
@@ -44,19 +46,17 @@ pub async fn get_pending_order(state: &AppState, user_id: i32, cart_id: i32) -> 
     Ok(order)
 }
 
-pub async fn mark_existing_order_cancelled(state: &AppState, user_id: i32, cart_id: i32, stripe_id: &str) -> Result<(), AppError> {
+pub async fn mark_existing_order_cancelled(state: &AppState, user_id: i32, stripe_id: &str) -> Result<(), AppError> {
     sqlx::query!(
         r#"
         UPDATE orders
         set status = 'CANCELLED'
         WHERE
             user_id = $1 AND
-            cart_id = $2 AND
-            stripe_id = $3 AND
+            stripe_id = $2 AND
             status = 'PENDING'
         "#,
         user_id,
-        cart_id,
         stripe_id
     )
     .execute(&state.pool)

@@ -55,8 +55,10 @@ pub enum AppError {
     Reqwest(#[from] reqwest::Error),
     #[error("Missing token error")]
     MissingToken,
-    #[error("Internal Server Error")]
-    Internal, // Catches All Errors
+    #[error("Payment error")]
+    Payment(String),
+    #[error("Internal Server Error {0}")]
+    Internal(String), // Catches All Errors
     #[error("Not found error: {0}")]
     NotFound(String), 
 }
@@ -120,9 +122,10 @@ impl <'r> Responder<'r, 'static> for AppError {
                 (Status::NotFound, message)
             }
             AppError::MissingToken  => (Status::Unauthorized, "Token not found.".to_string()),
+            AppError::Payment(err)  => (Status::InternalServerError, err.to_string()),
             AppError::Jwt(err) => (Status::Unauthorized, err.to_string()),
             AppError::Reqwest(err) => (Status::InternalServerError, err.to_string()),
-            AppError::Internal => (Status::InternalServerError, "An unexpected error occurred".to_string()),
+            AppError::Internal(err) => (Status::InternalServerError, err.to_string()),
         };
 
         let body = json!({  

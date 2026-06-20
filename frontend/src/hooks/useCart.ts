@@ -1,13 +1,15 @@
 import { api } from "../utils/axios"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AddToCart, ItemInCart, RemoveFromCart } from "../types/cart";
-import { PaymentIntent } from "../types/payment";
+import { ModifyCartDTO, ItemInCart } from "../types/cart";
+import { Currency } from "../types/payment";
 
-export function useGetItemsInCart() {
+export function useGetItemsInCart(currency: Currency) {
     const { data: itemsInCart, isLoading, isError} = useQuery<ItemInCart[]>({
-        queryKey: ['itemsInCart'],
+        queryKey: ['itemsInCart', currency],
         queryFn: async () => {
-            const res = await api.get('/cart/items')
+            const res = await api.get('/cart/items', {
+                params: {currency}
+            })
             return res.data
         },
         })
@@ -18,16 +20,16 @@ export function useGetItemsInCart() {
 export function useAddToCart() {
     const queryClient = useQueryClient()
     const addToCartMutation = useMutation({
-        mutationFn: async (itemToAdd: AddToCart) => {
-            try {
-                await api.post("/cart/add", itemToAdd)
-            } catch {
-                throw new Error("Product failed to add to cart!")
-            }
+        mutationFn: async (itemToAdd: ModifyCartDTO) => {
+        await api.post("/cart/add", itemToAdd)
+
         },
         onSuccess: () => {
             console.log(`Added to cart!`)
             queryClient.invalidateQueries({queryKey: ['itemsInCart']})
+        },
+        onError: (error) => {
+            console.error("Add to cart failed:", error);
         }
     })
 
@@ -37,16 +39,15 @@ export function useAddToCart() {
 export function useRemoveFromCart() {
     const queryClient = useQueryClient()
     const removeFromCartMutation = useMutation({
-        mutationFn: async (itemToRemove: RemoveFromCart) => {
-            try {
-                await api.post("/cart/remove", itemToRemove)
-            } catch {
-                throw new Error("Product failed to remove from cart!")
-            }
+        mutationFn: async (itemToRemove: ModifyCartDTO) => {
+            await api.post("/cart/remove", itemToRemove)
         },
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['itemsInCart']})
             console.log(`Removed from cart!`)
+        },
+        onError: (error) => {
+            console.error("Removing product from cart failed:", error);
         }
     })
 
@@ -56,37 +57,18 @@ export function useRemoveFromCart() {
 export function useDecrementProductInCart() {
     const queryClient = useQueryClient()
     const decrementCartMutation = useMutation({
-        mutationFn: async (itemToRemove: RemoveFromCart) => {
-            try {
-                await api.post("/cart/decrement", itemToRemove)
-            } catch {
-                throw new Error("Decrement failed!")
-            }
+        mutationFn: async (itemToRemove: ModifyCartDTO) => {
+            await api.post("/cart/decrement", itemToRemove)
         },
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['itemsInCart']})
             console.log(`Successfully decremented!`)
-        }
+        },
+        onError: (error) => {
+            console.error("Decrementing product from cart failed:", error);
+        },
     })
 
     return decrementCartMutation
 }
 
-export function useCheckoutCart() {
-    // const queryClient = useQueryClient()
-    const checkoutMutation = useMutation({
-        mutationFn: async (cart_id: number) => {
-            try {
-                const res = await api.post("/payment/stripe", cart_id)
-                return res.data as PaymentIntent
-            } catch {
-                throw new Error("Unable to retrieve client_secret from stripe!")
-            }
-        },
-        onSuccess: () => {
-            console.log(`Successfully retrieved client_secret`)
-        }
-    })
-
-    return checkoutMutation
-}

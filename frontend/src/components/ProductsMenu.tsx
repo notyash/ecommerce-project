@@ -4,6 +4,7 @@ import { useGetUser } from "../hooks/useAuth";
 import { useAddToCart } from "../hooks/useCart";
 import { Products } from "../types/product";
 import { getFreeDeliveryTill, getRandomBought } from "../utils/utils";
+import { useCurrencyStore } from "../store/currencyStore";
 
 export function ShowProducts({product} : {product: Products}) {
     const {
@@ -17,6 +18,7 @@ export function ShowProducts({product} : {product: Products}) {
     const cartMutation = useAddToCart()
     const {user} = useGetUser()
     const navigate = useNavigate()
+    const currency_symbol = useCurrencyStore((state) => state.symbol)
     
     return (
         <div className={`grid grid-cols-[auto,1fr] w-full`}>
@@ -34,7 +36,7 @@ export function ShowProducts({product} : {product: Products}) {
                 <h3 className="font-semibold">{title}</h3>
                 <span className="text-sm">⭐{rating}</span>
                 <span className="text-xs text-gray-800">{getRandomBought(id)}k+ bought in past month</span>
-                <h2 className="font-bold text-lg">${Number(price)?.toFixed(2)}</h2>
+                <h2 className="font-bold text-lg">{currency_symbol}{Number(price)?.toFixed(2)}</h2>
                 <span className="text-xs text-gray-800">Upto 5% back with the <b className="text-[#4390C7]">YashERA</b> card</span>
                 <span className="text-xs text-gray-800">FREE delivery till <b>{getFreeDeliveryTill(id)}</b></span>
                 <button className="bg-[#466EC3] text-white w-fit px-2 py-1 rounded-full hover:shadow-md hover:bg-opacity-80 mt-2 font-medium"
