@@ -1,7 +1,9 @@
-
 use rocket::{State, http::{Status}, serde::json::Json};
-use crate::{AppState, dto::auth::{AuthenticatedUser, LoginCredentials, OAuthCode, SignupCredentials, UserDto}, errors::AppError, repos::user::get_public_user_by_id, services::auth::{auth_response, user_login, user_oauth_login, user_signup}};
+use crate::{AppState, dto::auth::{AuthenticatedUser, LoginCredentials, OAuthCode, SignupCredentials, UserDto},
+ errors::AppError, repos::user::get_public_user_by_id, services::auth::{auth_response, user_login, user_oauth_login, user_signup}, utils::auth_utils::decode_jwt};
 use rocket::http::{Cookie, CookieJar};
+use std::time::{SystemTime, UNIX_EPOCH};
+use redis::AsyncCommands;
 
 pub fn routes() -> Vec<rocket::Route> {
     routes![oauth_login, me, signup, logout, login]
@@ -37,4 +39,3 @@ async fn logout(cookies: &CookieJar<'_>) -> Result<Status, AppError> {
     cookies.remove_private(Cookie::from("auth_token"));
     Ok(Status::NoContent)
 }
-

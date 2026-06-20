@@ -34,6 +34,7 @@ pub struct AppClaims { // of our own jwt token
     pub sub: i32,    
     pub exp: usize,     
     pub role: String,
+    // pub jti: String
 }
 
 #[derive(Deserialize)]

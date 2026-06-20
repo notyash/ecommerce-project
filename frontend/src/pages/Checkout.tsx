@@ -48,11 +48,13 @@ export default function CheckoutPage() { // TODO: Add websockets to read status 
     if (!clientSecret) return <div>Preparing checkout...</div>
 
     return (
-        <div className="bg-[#EAEDED]">
+        <div className="min-h-screen  bg-[#EAEDED]">
             <NavBar/>
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
-                <CheckoutForm />
-            </Elements>
+            <div className='pt-20'>
+                <Elements stripe={stripePromise} options={{ clientSecret, appearance }}>
+                    <CheckoutForm />
+                </Elements>
+            </div>
         </div>
     )   
 }

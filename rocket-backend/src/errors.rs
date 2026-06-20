@@ -55,6 +55,10 @@ pub enum AppError {
     Reqwest(#[from] reqwest::Error),
     #[error("Missing token error")]
     MissingToken,
+    #[error("Blacklisted token error")]
+    BlacklistedToken,
+    #[error("Redis error")]
+    Redis(#[from] redis::RedisError),
     #[error("Payment error")]
     Payment(String),
     #[error("Internal Server Error {0}")]
@@ -122,6 +126,8 @@ impl <'r> Responder<'r, 'static> for AppError {
                 (Status::NotFound, message)
             }
             AppError::MissingToken  => (Status::Unauthorized, "Token not found.".to_string()),
+            AppError::BlacklistedToken  => (Status::Unauthorized, "Blacklisted token found.".to_string()),
+            AppError::Redis(err)  => (Status::Unauthorized, err.to_string()),
             AppError::Payment(err)  => (Status::InternalServerError, err.to_string()),
             AppError::Jwt(err) => (Status::Unauthorized, err.to_string()),
             AppError::Reqwest(err) => (Status::InternalServerError, err.to_string()),
@@ -140,5 +146,4 @@ impl <'r> Responder<'r, 'static> for AppError {
             .ok()
     }
 }
-
 
