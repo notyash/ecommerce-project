@@ -2,12 +2,14 @@ use jsonwebtoken::{DecodingKey, Validation, decode};
 use rocket::http::{Cookie, SameSite};
 use crate::{dto::auth::AppClaims , errors::{AppError, AuthErrors} };
 use argon2::{password_hash::{rand_core::OsRng, PasswordHasher, SaltString}, Argon2};
+use uuid::Uuid;
 
 pub fn generate_jwt(sub: i32, secret_key: &str, session_duration: i64) -> Result<String, AppError> {
     let claims = AppClaims {
         sub,
         exp: (chrono::Utc::now().timestamp() + session_duration)  as usize,
         role: "User".to_string(),
+        // jti: Uuid::new_v4().to_string(),
     };
 
     let token = jsonwebtoken::encode(&jsonwebtoken::Header::default(), &claims,
